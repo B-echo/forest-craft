@@ -1976,9 +1976,10 @@ async function loadAuthSession(){
 
   setAuthUser(data.session?.user || null);
 
- if(USER){
+if(USER){
   renderAuth();
   loadCloudWishlist();
+  loadCloudCart();
 }
 
   fcSupabase.auth.onAuthStateChange(
@@ -1991,14 +1992,18 @@ async function loadAuthSession(){
   pendingAuthEmail = '';
   renderAuth();
   loadCloudWishlist();
+  loadCloudCart();
 }
 
-      if(event === 'SIGNED_OUT'){
+if(event === 'SIGNED_OUT'){
   USER = null;
   WISHLIST = [];
+  CART = [];
+
   renderAuth();
   renderCounts();
   renderWishlist();
+  renderCart();
   renderProductGrid();
 }
     }
