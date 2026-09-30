@@ -1748,23 +1748,128 @@ function coSaveAddress(){
   try{ window.storage.set('fc:address', JSON.stringify(SAVED_ADDRESS)); }catch(e){}
   coNext();
 }
-function coPlaceOrder(){
+async function coPlaceOrder(){
+  if(!USER){
+    showToast('Please log in before placing an order');
+    openAuth();
+    return;
+  }
+
+  if(!CART.length){
+    showToast('Your bag is empty');
+    return;
+  }
+
   const sub = cartSubtotal();
-  const discount = appliedCoupon ? Math.round(sub * appliedCoupon.pct) : 0;
+  const discount = appliedCoupon
+    ? Math.round(sub * appliedCoupon.pct)
+    : 0;
+
   const shipping = (sub - discount) > 2000 ? 0 : 99;
   const total = sub - discount + shipping;
-  const order = {
-    orderNo: 'FC' + Math.floor(100000 + Math.random()*899999),
-    date: new Date().toISOString(),
-    items: CART.map(c=>({name:c.name, qty:c.qty, price:c.price})),
-    total, coupon: appliedCoupon ? appliedCoupon.code : null
-  };
-  ORDERS.unshift(order);
-  try{ window.storage.set('fc:orders', JSON.stringify(ORDERS)); }catch(e){}
-  lastOrder = order;
-  CART = []; appliedCoupon = null; couponMsg = {};
-  saveCart(); renderCounts(); renderCart();
-  coStep = 3; renderCheckout();
+
+  const orderNumber =
+    'FC' + Math.floor(100000 + Math.random() * 900000);
+
+  const shippingAddress = SAVED_ADDRESS
+  ? {
+      line1: SAVED_ADDRESS.line1 || '',
+      city: SAVED_ADDRESS.city || '',
+      pin: SAVED_ADDRESS.pin || '',
+      state: SAVED_ADDRESS.state || '',
+      phone: SAVED_ADDRESS.phone || ''
+    }
+  : null;
+
+  try{
+    // 1. Create the order
+    const { data: order, error: orderError } = await fcSupabase
+      .from('orders')
+      .insert({
+        user_id: USER.id,
+        order_number: orderNumber,
+        status: 'placed',
+        payment_status: 'pending',
+        currency: 'INR',
+        subtotal: sub,
+        discount: discount,
+        shipping_fee: shipping,
+        total: total,
+        coupon_code: appliedCoupon ? appliedCoupon.code : null,
+        shipping_address: shippingAddress
+      })
+      .select()
+      .single();
+
+    if(orderError){
+      console.error('Order creation error:', orderError);
+      showToast('Could not place your order');
+      return;
+    }
+
+    // 2. Create order items
+    const orderItems = CART.map(c => ({
+      order_id: order.id,
+      user_id: USER.id,
+      product_id: c.id,
+      product_name: c.name,
+      color: c.color || null,
+      quantity: c.qty,
+      unit_price: c.price,
+      line_total: c.price * c.qty
+    }));
+
+    const { error: itemsError } = await fcSupabase
+      .from('order_items')
+      .insert(orderItems);
+
+    if(itemsError){
+      console.error('Order items error:', itemsError);
+      showToast('Order could not be completed');
+      return;
+    }
+
+    // 3. Clear the customer's cloud cart
+    const { error: cartError } = await fcSupabase
+      .from('cart_items')
+      .delete()
+      .eq('user_id', USER.id);
+
+    if(cartError){
+      console.error('Cart clearing error:', cartError);
+      showToast('Order placed, but your bag could not be cleared');
+      return;
+    }
+
+    // 4. Prepare the confirmation screen
+    lastOrder = {
+      orderNo: order.order_number,
+      date: order.created_at,
+      items: CART.map(c => ({
+        name: c.name,
+        qty: c.qty,
+        price: c.price
+      })),
+      total: order.total,
+      coupon: appliedCoupon ? appliedCoupon.code : null
+    };
+
+    // 5. Clear frontend cart state
+    CART = [];
+    appliedCoupon = null;
+    couponMsg = {};
+
+    renderCounts();
+    renderCart();
+
+    // 6. Move checkout to confirmation
+    coStep = 3;
+    renderCheckout();
+
+  }catch(error){
+    console.error('Place order error:', error);
+    showToast('Something went wrong while placing your order');
+  }
 }
 let lastOrder = null;
 
