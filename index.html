@@ -865,7 +865,35 @@ async function loadState(){
   try{ const r = await window.storage.get('fc:recent'); RECENTLY_VIEWED = r ? JSON.parse(r.value) : []; }catch(e){ RECENTLY_VIEWED = []; }
   renderCounts(); renderCart(); renderWishlist(); renderRecentlyViewedStrip();
 }
-async function saveCart(){ try{ await window.storage.set('fc:cart', JSON.stringify(CART)); }catch(e){} }
+async function saveCart(){
+  if(!USER) return;
+
+  try{
+    await fcSupabase
+      .from('cart_items')
+      .delete()
+      .eq('user_id', USER.id);
+
+    if(CART.length === 0) return;
+
+    const rows = CART.map(c => ({
+      user_id: USER.id,
+      product_id: c.id,
+      color: c.color,
+      quantity: c.qty
+    }));
+
+    const { error } = await fcSupabase
+      .from('cart_items')
+      .insert(rows);
+
+    if(error){
+      console.error('Cart sync error:', error);
+    }
+  }catch(e){
+    console.error('Cart sync error:', e);
+  }
+}
 async function saveWishlist(){ try{ await window.storage.set('fc:wishlist', JSON.stringify(WISHLIST)); }catch(e){} }
 async function saveUser(){ try{ await window.storage.set('fc:user', JSON.stringify(USER)); }catch(e){} }
 
