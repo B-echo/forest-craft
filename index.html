@@ -1809,9 +1809,10 @@ async function loadAuthSession(){
 
   setAuthUser(data.session?.user || null);
 
-  if(USER){
-    renderAuth();
-  }
+ if(USER){
+  renderAuth();
+  loadCloudWishlist();
+}
 
   fcSupabase.auth.onAuthStateChange(
     (event, session) => {
@@ -1819,15 +1820,20 @@ async function loadAuthSession(){
       setAuthUser(session?.user || null);
 
       if(event === 'SIGNED_IN'){
-        authStep = 'email';
-        pendingAuthEmail = '';
-        renderAuth();
-      }
+  authStep = 'email';
+  pendingAuthEmail = '';
+  renderAuth();
+  loadCloudWishlist();
+}
 
       if(event === 'SIGNED_OUT'){
-        USER = null;
-        renderAuth();
-      }
+  USER = null;
+  WISHLIST = [];
+  renderAuth();
+  renderCounts();
+  renderWishlist();
+  renderProductGrid();
+}
     }
   );
 }
