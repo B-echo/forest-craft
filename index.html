@@ -1048,6 +1048,63 @@ async function removeFromCart(id, color){
   renderCart();
 }
 
+async function moveCartToWishlist(id, color){
+  if(!USER){
+    showToast('Please log in first');
+    openAuth();
+    return;
+  }
+
+  const product = PRODUCTS.find(p => p.id === id);
+
+  if(!product){
+    showToast('Product not found');
+    return;
+  }
+
+  try{
+    const { error: wishlistError } = await fcSupabase
+      .from('wishlist_items')
+      .insert({
+        user_id: USER.id,
+        product_id: product.id
+      });
+
+    if(wishlistError && wishlistError.code !== '23505'){
+      console.error('Wishlist error:', wishlistError);
+      showToast('Could not move to wishlist');
+      return;
+    }
+
+    const { error: cartError } = await fcSupabase
+      .from('cart_items')
+      .delete()
+      .eq('user_id', USER.id)
+      .eq('product_id', id)
+      .eq('color', color);
+
+    if(cartError){
+      console.error('Cart removal error:', cartError);
+      showToast('Could not remove item from bag');
+      return;
+    }
+
+    CART = CART.filter(
+      c => !(c.id === id && c.color === color)
+    );
+
+    await loadCloudWishlist();
+
+    renderCounts();
+    renderCart();
+
+    showToast(product.name + ' moved to your wishlist');
+
+  }catch(error){
+    console.error('Move to wishlist error:', error);
+    showToast('Something went wrong');
+  }
+}
 
 async function changeQty(id, color, delta){
 
@@ -1394,7 +1451,15 @@ function renderCart(){
           <span>${c.qty}</span>
           <button onclick="changeQty('${c.id}','${c.color}',1)">+</button>
         </div>
-        <br><button class="remove-btn" onclick="removeFromCart('${c.id}','${c.color}')">Remove</button>
+        <br>
+<div class="cart-actions">
+  <button class="remove-btn" onclick="moveCartToWishlist('${c.id}','${c.color}')">
+    Move to Wishlist
+  </button>
+  <button class="remove-btn" onclick="removeFromCart('${c.id}','${c.color}')">
+    Remove
+  </button>
+</div>
       </div>
       <div class="ci-price">${fmt(c.price*c.qty)}</div>
     </div>
