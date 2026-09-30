@@ -902,14 +902,107 @@ function changeQty(id,color,delta){
 }
 function cartSubtotal(){ return CART.reduce((s,c)=>s + c.price*c.qty, 0); }
 
-/* ---------- wishlist logic ---------- */
-function toggleWishlist(product){
-  const idx = WISHLIST.findIndex(w=>w.id===product.id);
-  if(idx>-1){ WISHLIST.splice(idx,1); showToast('Removed from wishlist'); }
-  else{ WISHLIST.push({id:product.id, name:product.name, price:product.price, image:product.images[0], cat:product.cat}); showToast('Added to wishlist'); }
-  saveWishlist(); renderCounts(); renderWishlist(); renderProductGrid();
+/* ---------- cloud wishlist ---------- */
+
+async function loadCloudWishlist(){
+  if(!USER){
+    WISHLIST = [];
+    renderCounts();
+    renderWishlist();
+    renderProductGrid();
+    return;
+  }
+
+  const { data, error } = await fcSupabase
+    .from('wishlist_items')
+    .select('product_id, created_at')
+    .eq('user_id', USER.id)
+    .order('created_at', { ascending: true });
+
+  if(error){
+    console.error('Wishlist load error:', error);
+    showToast('Could not load wishlist');
+    return;
+  }
+
+  WISHLIST = data
+    .map(row => PRODUCTS.find(p => p.id === row.product_id))
+    .filter(Boolean)
+    .map(p => ({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      image: p.images[0],
+      cat: p.cat
+    }));
+
+  renderCounts();
+  renderWishlist();
+  renderProductGrid();
 }
-function isWishlisted(id){ return WISHLIST.some(w=>w.id===id); }
+
+
+async function toggleWishlist(product){
+  if(!USER){
+    showToast('Please log in to save your wishlist');
+    openAuthModal();
+    return;
+  }
+
+  const alreadySaved = WISHLIST.some(w => w.id === product.id);
+
+  if(alreadySaved){
+
+    const { error } = await fcSupabase
+      .from('wishlist_items')
+      .delete()
+      .eq('user_id', USER.id)
+      .eq('product_id', product.id);
+
+    if(error){
+      console.error('Wishlist remove error:', error);
+      showToast('Could not remove from wishlist');
+      return;
+    }
+
+    WISHLIST = WISHLIST.filter(w => w.id !== product.id);
+    showToast('Removed from wishlist');
+
+  } else {
+
+    const { error } = await fcSupabase
+      .from('wishlist_items')
+      .insert({
+        user_id: USER.id,
+        product_id: product.id
+      });
+
+    if(error){
+      console.error('Wishlist add error:', error);
+      showToast('Could not add to wishlist');
+      return;
+    }
+
+    WISHLIST.push({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.images[0],
+      cat: product.cat
+    });
+
+    showToast('Added to wishlist');
+  }
+
+  renderCounts();
+  renderWishlist();
+  renderProductGrid();
+}
+
+
+function isWishlisted(id){
+  return WISHLIST.some(w => w.id === id);
+}
 
 /* ---------- counts ---------- */
 function renderCounts(){
@@ -1141,7 +1234,33 @@ function renderWishlist(){
     </div>
   `).join('');
 }
-function removeWish(id){ WISHLIST = WISHLIST.filter(w=>w.id!==id); saveWishlist(); renderCounts(); renderWishlist(); renderProductGrid(); }
+  async function removeWish(id){
+  if(!USER){
+    showToast('Please log in first');
+    openAuthModal();
+    return;
+  }
+
+  const { error } = await fcSupabase
+    .from('wishlist_items')
+    .delete()
+    .eq('user_id', USER.id)
+    .eq('product_id', id);
+
+  if(error){
+    console.error('Wishlist remove error:', error);
+    showToast('Could not remove from wishlist');
+    return;
+  }
+
+  WISHLIST = WISHLIST.filter(w => w.id !== id);
+
+  renderCounts();
+  renderWishlist();
+  renderProductGrid();
+
+  showToast('Removed from wishlist');
+}
 function moveWishToCart(id){
   const p = PRODUCTS.find(x=>x.id===id);
   if(p) addToCart(p, p.colors[0], 1);
