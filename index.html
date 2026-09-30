@@ -860,7 +860,6 @@ function renderRecentlyViewedStrip(){
 
 /* ---------- storage helpers ---------- */
 async function loadState(){
-  try{ const r = await window.storage.get('fc:cart'); CART = r ? JSON.parse(r.value) : []; }catch(e){ CART = []; }
   try{ const r = await window.storage.get('fc:orders'); ORDERS = r ? JSON.parse(r.value) : []; }catch(e){ ORDERS = []; }
   try{ const r = await window.storage.get('fc:address'); SAVED_ADDRESS = r ? JSON.parse(r.value) : null; }catch(e){ SAVED_ADDRESS = null; }
   try{ const r = await window.storage.get('fc:recent'); RECENTLY_VIEWED = r ? JSON.parse(r.value) : []; }catch(e){ RECENTLY_VIEWED = []; }
