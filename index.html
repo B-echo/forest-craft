@@ -883,23 +883,190 @@ function showToast(msg){
 const fmt = n => '₹' + n.toLocaleString('en-IN');
 
 /* ---------- cart logic ---------- */
-function addToCart(product, color, qty){
+
+async function loadCloudCart(){
+  if(!USER){
+    CART = [];
+    renderCounts();
+    renderCart();
+    return;
+  }
+
+  const { data, error } = await fcSupabase
+    .from('cart_items')
+    .select('product_id, color, quantity, created_at')
+    .eq('user_id', USER.id)
+    .order('created_at', { ascending: true });
+
+  if(error){
+    console.error('Cart load error:', error);
+    showToast('Could not load your bag');
+    return;
+  }
+
+  CART = data.map(row => {
+    const product = PRODUCTS.find(p => p.id === row.product_id);
+
+    if(!product) return null;
+
+    return {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.images[0],
+      color: row.color || product.colors[0],
+      cat: product.cat,
+      qty: row.quantity
+    };
+  }).filter(Boolean);
+
+  renderCounts();
+  renderCart();
+}
+
+
+async function addToCart(product, color, qty){
+  if(!USER){
+    showToast('Please log in to add items to your bag');
+    openAuthModal();
+    return;
+  }
+
   qty = qty || 1;
-  const existing = CART.find(c => c.id===product.id && c.color===color);
-  if(existing){ existing.qty += qty; }
-  else{ CART.push({id:product.id, name:product.name, price:product.price, image:product.images[0], color:color||product.colors[0], cat:product.cat, qty}); }
-  saveCart(); renderCounts(); renderCart();
+
+  const selectedColor = color || product.colors[0];
+
+  const existing = CART.find(
+    c => c.id === product.id && c.color === selectedColor
+  );
+
+  if(existing){
+
+    const newQty = existing.qty + qty;
+
+    const { error } = await fcSupabase
+      .from('cart_items')
+      .update({
+        quantity: newQty
+      })
+      .eq('user_id', USER.id)
+      .eq('product_id', product.id)
+      .eq('color', selectedColor);
+
+    if(error){
+      console.error('Cart update error:', error);
+      showToast('Could not update your bag');
+      return;
+    }
+
+    existing.qty = newQty;
+
+  } else {
+
+    const { error } = await fcSupabase
+      .from('cart_items')
+      .insert({
+        user_id: USER.id,
+        product_id: product.id,
+        color: selectedColor,
+        quantity: qty
+      });
+
+    if(error){
+      console.error('Cart insert error:', error);
+      showToast('Could not add item to your bag');
+      return;
+    }
+
+    CART.push({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.images[0],
+      color: selectedColor,
+      cat: product.cat,
+      qty: qty
+    });
+  }
+
+  renderCounts();
+  renderCart();
+
   showToast(product.name + ' added to your bag');
 }
-function removeFromCart(id,color){ CART = CART.filter(c=>!(c.id===id && c.color===color)); saveCart(); renderCounts(); renderCart(); }
-function changeQty(id,color,delta){
-  const row = CART.find(c=>c.id===id && c.color===color);
-  if(!row) return;
-  row.qty += delta;
-  if(row.qty<=0){ removeFromCart(id,color); return; }
-  saveCart(); renderCounts(); renderCart();
+
+
+async function removeFromCart(id, color){
+
+  if(!USER) return;
+
+  const { error } = await fcSupabase
+    .from('cart_items')
+    .delete()
+    .eq('user_id', USER.id)
+    .eq('product_id', id)
+    .eq('color', color);
+
+  if(error){
+    console.error('Cart delete error:', error);
+    showToast('Could not remove item');
+    return;
+  }
+
+  CART = CART.filter(
+    c => !(c.id === id && c.color === color)
+  );
+
+  renderCounts();
+  renderCart();
 }
-function cartSubtotal(){ return CART.reduce((s,c)=>s + c.price*c.qty, 0); }
+
+
+async function changeQty(id, color, delta){
+
+  if(!USER) return;
+
+  const row = CART.find(
+    c => c.id === id && c.color === color
+  );
+
+  if(!row) return;
+
+  const newQty = row.qty + delta;
+
+  if(newQty <= 0){
+    await removeFromCart(id, color);
+    return;
+  }
+
+  const { error } = await fcSupabase
+    .from('cart_items')
+    .update({
+      quantity: newQty
+    })
+    .eq('user_id', USER.id)
+    .eq('product_id', id)
+    .eq('color', color);
+
+  if(error){
+    console.error('Cart quantity update error:', error);
+    showToast('Could not update quantity');
+    return;
+  }
+
+  row.qty = newQty;
+
+  renderCounts();
+  renderCart();
+}
+
+
+function cartSubtotal(){
+  return CART.reduce(
+    (s,c) => s + c.price * c.qty,
+    0
+  );
+}
 
 /* ---------- cloud wishlist ---------- */
 
