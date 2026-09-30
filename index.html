@@ -412,6 +412,61 @@ footer{background:var(--ink); color:rgba(243,236,220,0.72); padding:80px 0 30px;
 /* ============ MODAL (quickview / checkout / auth) ============ */
 .modal-overlay{position:fixed; inset:0; background:rgba(20,16,12,0.6); z-index:850; display:none; align-items:center; justify-content:center; padding:20px;}
 .modal-overlay.open{display:flex;}
+  .cart-confirm-box{
+  max-width:430px;
+  width:100%;
+  position:relative;
+  text-align:center;
+}
+
+.cart-confirm-content{
+  padding:36px 30px 30px;
+}
+
+.cart-confirm-icon{
+  width:48px;
+  height:48px;
+  margin:0 auto 18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--line);
+  border-radius:50%;
+  font-size:24px;
+  color:var(--coral-deep);
+}
+
+.cart-confirm-content h3{
+  margin:0 0 10px;
+  font-family:'Fraunces',serif;
+  font-size:24px;
+  font-weight:500;
+}
+
+.cart-confirm-content p{
+  margin:0 auto;
+  max-width:340px;
+  color:var(--stone);
+  font-size:13px;
+  line-height:1.7;
+}
+
+.cart-confirm-actions{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-top:26px;
+}
+
+.cart-confirm-actions .btn{
+  min-width:125px;
+}
+
+.cart-confirm-box .modal-close{
+  position:absolute;
+  top:14px;
+  right:16px;
+}
 .modal-box{background:var(--canvas); max-width:900px; width:100%; max-height:88vh; overflow-y:auto; position:relative; box-shadow:var(--shadow);}
 .modal-close{position:absolute; top:16px; right:18px; background:none;border:none;font-size:22px; z-index:5; color:var(--ink);}
 .qv-grid{display:grid; grid-template-columns:1fr 1fr;}
@@ -707,6 +762,32 @@ footer{background:var(--ink); color:rgba(243,236,220,0.72); padding:80px 0 30px;
 <div class="drawer" id="wishDrawer">
   <div class="drawer-head"><h3>Wishlist</h3><button id="closeWish">&times;</button></div>
   <div class="drawer-body" id="wishBody"></div>
+</div>
+  <!-- ========== CART CONFIRMATION MODAL ========== -->
+<div class="modal-overlay" id="cartConfirmOverlay">
+  <div class="modal-box cart-confirm-box">
+    <button class="modal-close" id="cartConfirmClose" onclick="closeCartConfirm()">&times;</button>
+
+    <div class="cart-confirm-content">
+      <div class="cart-confirm-icon">♡</div>
+
+      <h3 id="cartConfirmTitle">Move to Wishlist?</h3>
+
+      <p id="cartConfirmMessage">
+        Would you like to save this item to your wishlist instead of keeping it in your bag?
+      </p>
+
+      <div class="cart-confirm-actions">
+        <button class="btn btn-ghost" id="cartConfirmCancel" onclick="closeCartConfirm()">
+  Cancel
+</button>
+
+        <button class="btn btn-solid" id="cartConfirmAction" onclick="confirmCartAction()">
+  Move to Wishlist
+</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ============ QUICKVIEW MODAL ============ -->
@@ -1058,6 +1139,60 @@ async function removeFromCart(id, color){
   renderCart();
 }
 
+  let cartConfirmAction = null;
+
+function openCartConfirm(type, id, color){
+  const product = PRODUCTS.find(p => p.id === id);
+
+  if(!product){
+    showToast('Product not found');
+    return;
+  }
+
+  const overlay = document.getElementById('cartConfirmOverlay');
+  const title = document.getElementById('cartConfirmTitle');
+  const message = document.getElementById('cartConfirmMessage');
+  const actionButton = document.getElementById('cartConfirmAction');
+
+  if(!overlay || !title || !message || !actionButton) return;
+
+  if(type === 'wishlist'){
+    title.textContent = 'Move to Wishlist?';
+    message.textContent = 'Would you like to save this item to your wishlist instead of keeping it in your bag?';
+    actionButton.textContent = 'Move to Wishlist';
+
+    cartConfirmAction = () => moveCartToWishlist(id, color);
+  }
+
+  if(type === 'remove'){
+    title.textContent = 'Remove from Bag?';
+    message.textContent = 'Are you sure you want to remove this item from your bag?';
+    actionButton.textContent = 'Remove';
+
+    cartConfirmAction = () => removeFromCart(id, color);
+  }
+
+  overlay.classList.add('open');
+}
+
+function closeCartConfirm(){
+  const overlay = document.getElementById('cartConfirmOverlay');
+
+  if(overlay){
+    overlay.classList.remove('open');
+  }
+
+  cartConfirmAction = null;
+}
+
+function confirmCartAction(){
+  if(cartConfirmAction){
+    const action = cartConfirmAction;
+    closeCartConfirm();
+    action();
+  }
+}
+  
 async function moveCartToWishlist(id, color){
   if(!USER){
     showToast('Please log in first');
@@ -1463,12 +1598,12 @@ function renderCart(){
         </div>
         <br>
 <div class="cart-actions">
-  <button class="remove-btn" onclick="moveCartToWishlist('${c.id}','${c.color}')">
+  <button class="remove-btn" onclick="openCartConfirm('wishlist','${c.id}','${c.color}')">
     Move to Wishlist
   </button>
-  <button class="remove-btn" onclick="removeFromCart('${c.id}','${c.color}')">
-    Remove
-  </button>
+  <button class="remove-btn" onclick="openCartConfirm('remove','${c.id}','${c.color}')">
+  Remove
+</button>
 </div>
       </div>
       <div class="ci-price">${fmt(c.price*c.qty)}</div>
