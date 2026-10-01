@@ -1679,7 +1679,110 @@ function openCheckout(){
   renderCheckout();
 }
 function closeCheckoutFn(){ document.getElementById('coOverlay').classList.remove('open'); }
-function renderCheckout(){
+  function cleanCheckoutAddress(address){
+  const a = address || {};
+
+  const clean = value => {
+    if(
+      value === undefined ||
+      value === null ||
+      String(value).trim().toLowerCase() === 'undefined' ||
+      String(value).trim().toLowerCase() === 'null'
+    ){
+      return '';
+    }
+
+    return String(value).trim();
+  };
+
+  return {
+    line1: clean(a.line1),
+    city: clean(a.city),
+    pin: clean(a.pin),
+    state: clean(a.state),
+    phone: clean(a.phone)
+  };
+}
+async function handlePincodeInput(value){
+  const pin = String(value || '').replace(/\D/g, '').slice(0, 6);
+
+  const pinInput = document.getElementById('coPin');
+  const status = document.getElementById('coPinStatus');
+
+  if(pinInput){
+    pinInput.value = pin;
+  }
+
+  if(!status) return;
+
+  if(pin.length === 0){
+    status.textContent = '';
+    return;
+  }
+
+  if(pin.length < 6){
+    status.textContent = 'Enter a 6-digit pincode';
+    return;
+  }
+
+  status.textContent = 'Checking pincode...';
+
+  try{
+    const response = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+    const data = await response.json();
+
+    const result = data && data[0];
+
+    if(
+      !result ||
+      result.Status !== 'Success' ||
+      !result.PostOffice ||
+      !result.PostOffice.length
+    ){
+      status.textContent = 'Invalid pincode. Please check and try again.';
+      return;
+    }
+
+    const postOffice = result.PostOffice[0];
+
+    const detectedState = postOffice.State || '';
+    const detectedCity =
+      postOffice.District ||
+      postOffice.Block ||
+      postOffice.Name ||
+      '';
+
+    const stateSelect = document.getElementById('coState');
+    const cityInput = document.getElementById('coCity');
+
+    if(stateSelect && detectedState){
+      const stateOption = Array.from(stateSelect.options)
+        .find(option => option.value === detectedState);
+
+      if(stateOption){
+        stateSelect.value = detectedState;
+      }
+    }
+    if(stateSelect && detectedState){
+  stateSelect.dataset.detectedState = detectedState;
+}
+
+    if(cityInput && detectedCity){
+      cityInput.value = detectedCity;
+    }
+
+    status.textContent =
+      detectedState
+        ? `✓ Pincode verified — ${detectedState}`
+        : '✓ Pincode verified';
+
+  }catch(error){
+    console.error('Pincode lookup error:', error);
+    status.textContent =
+      'Could not verify pincode. You can select the state manually.';
+  }
+}
+  function renderCheckout(){
   document.getElementById('coSteps').innerHTML = STEP_LABELS.map((l,i)=>
     `<div class="co-step ${i===coStep?'active':''} ${i<coStep?'done':''}">${l}</div>`
   ).join('');
@@ -1696,7 +1799,7 @@ function renderCheckout(){
 
   const total = sub - discount + shipping;
 
-  const saved = SAVED_ADDRESS || {};
+  const saved = cleanCheckoutAddress(SAVED_ADDRESS);
 
   /* =========================
      STEP 1 — INFORMATION
@@ -1801,14 +1904,16 @@ function renderCheckout(){
           <label>Pincode</label>
 
           <input
-            id="coPin"
-            type="text"
-            inputmode="numeric"
-            maxlength="6"
-            autocomplete="postal-code"
-            placeholder="6-digit pincode"
-            value="${saved.pin || ''}"
-          >
+    id="coPin"
+    type="text"
+    inputmode="numeric"
+    maxlength="6"
+    autocomplete="postal-code"
+    placeholder="6-digit pincode"
+    value="${saved.pin || ''}"
+    oninput="handlePincodeInput(this.value)"
+>
+<div id="coPinStatus" style="font-size:12px;margin-top:6px;color:var(--stone);"></div>
 
         </div>
 
@@ -2067,6 +2172,9 @@ function coNext(){
     const state = stateInput
       ? stateInput.value.trim()
       : '';
+    const detectedState = stateInput
+  ? (stateInput.dataset.detectedState || '').trim()
+  : '';
 
     if(!address){
       showToast('Please enter your delivery address');
@@ -2085,6 +2193,11 @@ function coNext(){
       if(stateInput) stateInput.focus();
       return;
     }
+    if(detectedState && state !== detectedState){
+  showToast(`Pincode belongs to ${detectedState}. Please select the correct state.`);
+  if(stateInput) stateInput.focus();
+  return;
+}
 
     const pinDigits = pin.replace(/\D/g, '');
 
