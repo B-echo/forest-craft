@@ -2204,7 +2204,7 @@ function coSaveAddress(){
 
   coStep = 2;
   renderCheckout();
-}=
+}
 async function coPlaceOrder(){
   if(!USER){
     showToast('Please log in before placing an order');
@@ -2944,8 +2944,16 @@ function wireEvents(){
 
 /* ---------- init ---------- */
 function init(){
-  document.getElementById('navLogoImg').src = IMG.logo;
-  document.getElementById('footLogoImg').src = IMG.logo;
+  const navLogoImg = document.getElementById('navLogoImg');
+  const footLogoImg = document.getElementById('footLogoImg');
+
+  if(IMG.logo){
+    if(navLogoImg) navLogoImg.src = IMG.logo;
+    if(footLogoImg) footLogoImg.src = IMG.logo;
+  }else{
+    if(navLogoImg) navLogoImg.style.display = 'none';
+    if(footLogoImg) footLogoImg.style.display = 'none';
+  }
   renderExhibits();
   renderCraftStoriesSwitch();
   renderCraftRail();
