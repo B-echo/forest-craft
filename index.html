@@ -1736,7 +1736,19 @@ function renderCheckout(){
     `;
   }
 }
-function coNext(){ coStep++; renderCheckout(); }
+function coNext(){
+  if(coStep === 0){
+    const phoneInput = document.getElementById('coPhone');
+
+    SAVED_ADDRESS = {
+      ...(SAVED_ADDRESS || {}),
+      phone: phoneInput ? phoneInput.value.trim() : ''
+    };
+  }
+
+  coStep++;
+  renderCheckout();
+}
 function coSaveAddress(){
   SAVED_ADDRESS = {
     line1: document.getElementById('coAddr1').value,
