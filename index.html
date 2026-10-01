@@ -1683,63 +1683,341 @@ function renderCheckout(){
   document.getElementById('coSteps').innerHTML = STEP_LABELS.map((l,i)=>
     `<div class="co-step ${i===coStep?'active':''} ${i<coStep?'done':''}">${l}</div>`
   ).join('');
+
   const body = document.getElementById('coBody');
+
   const sub = cartSubtotal();
-  const discount = appliedCoupon ? Math.round(sub * appliedCoupon.pct) : 0;
+
+  const discount = appliedCoupon
+    ? Math.round(sub * appliedCoupon.pct)
+    : 0;
+
   const shipping = (sub - discount) > 2000 ? 0 : 99;
+
   const total = sub - discount + shipping;
 
-  if(coStep===0){
+  const saved = SAVED_ADDRESS || {};
+
+  /* =========================
+     STEP 1 — INFORMATION
+     ========================= */
+
+  if(coStep === 0){
+
     body.innerHTML = `
-      <div class="form-row"><div class="field"><label>Full Name</label><input id="coName" type="text" value="${USER?USER.name:''}"></div>
-      <div class="field"><label>Email</label><input id="coEmail" type="email" value="${USER?USER.email:''}"></div></div>
-      <div class="form-row"><div class="field"><label>Phone</label><input id="coPhone" type="tel" placeholder="+91" value="${SAVED_ADDRESS?SAVED_ADDRESS.phone||'':''}"></div></div>
-      <button class="btn btn-solid" style="width:100%;justify-content:center;margin-top:10px;" onclick="coNext()">Continue to Address</button>
+      <div class="form-row">
+
+        <div class="field">
+          <label>Full Name</label>
+          <input
+            id="coName"
+            type="text"
+            autocomplete="name"
+            value="${USER?.name || ''}"
+          >
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <input
+            id="coEmail"
+            type="email"
+            autocomplete="email"
+            value="${USER?.email || ''}"
+            disabled
+          >
+        </div>
+
+      </div>
+
+      <div class="form-row">
+
+        <div class="field">
+          <label>Phone Number</label>
+          <input
+            id="coPhone"
+            type="tel"
+            inputmode="numeric"
+            autocomplete="tel"
+            placeholder="+91 XXXXX XXXXX"
+            value="${saved.phone || ''}"
+          >
+        </div>
+
+      </div>
+
+      <button
+        class="btn btn-solid"
+        style="width:100%;justify-content:center;margin-top:10px;"
+        onclick="coNext()"
+      >
+        Continue to Address
+      </button>
     `;
-  } else if(coStep===1){
+
+  }
+
+  /* =========================
+     STEP 2 — SHIPPING ADDRESS
+     ========================= */
+
+  else if(coStep === 1){
+
     body.innerHTML = `
-      <div class="form-row full"><div class="field"><label>Address Line</label><input id="coAddr1" type="text" value="${SAVED_ADDRESS?SAVED_ADDRESS.line1||'':''}"></div></div>
-      <div class="form-row"><div class="field"><label>City</label><input id="coCity" type="text" value="${SAVED_ADDRESS?SAVED_ADDRESS.city:'Bengaluru'}"></div>
-      <div class="field"><label>Pincode</label><input id="coPin" type="text" value="${SAVED_ADDRESS?SAVED_ADDRESS.pin||'':''}"></div></div>
-      <div class="form-row"><div class="field"><label>State</label><input id="coState" type="text" value="${SAVED_ADDRESS?SAVED_ADDRESS.state:'Karnataka'}"></div></div>
-      ${SAVED_ADDRESS ? `<div class="demo-note">Prefilled from your last order on this browser.</div>` : ''}
-      <button class="btn btn-solid" style="width:100%;justify-content:center;margin-top:10px;" onclick="coSaveAddress()">Continue to Payment</button>
+      <div class="form-row full">
+
+        <div class="field">
+          <label>Address Line</label>
+
+          <input
+            id="coAddr1"
+            type="text"
+            autocomplete="street-address"
+            placeholder="House / Flat / Street / Area"
+            value="${saved.line1 || ''}"
+          >
+        </div>
+
+      </div>
+
+      <div class="form-row">
+
+        <div class="field">
+
+          <label>City</label>
+
+          <input
+            id="coCity"
+            type="text"
+            autocomplete="address-level2"
+            placeholder="Enter your city"
+            value="${saved.city || ''}"
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label>Pincode</label>
+
+          <input
+            id="coPin"
+            type="text"
+            inputmode="numeric"
+            maxlength="6"
+            autocomplete="postal-code"
+            placeholder="6-digit pincode"
+            value="${saved.pin || ''}"
+          >
+
+        </div>
+
+      </div>
+
+      <div class="form-row">
+
+        <div class="field">
+
+          <label>State</label>
+
+          <select
+            id="coState"
+            autocomplete="address-level1"
+          >
+
+            <option value="">Select your state</option>
+
+            <option value="Andhra Pradesh" ${saved.state === 'Andhra Pradesh' ? 'selected' : ''}>Andhra Pradesh</option>
+            <option value="Arunachal Pradesh" ${saved.state === 'Arunachal Pradesh' ? 'selected' : ''}>Arunachal Pradesh</option>
+            <option value="Assam" ${saved.state === 'Assam' ? 'selected' : ''}>Assam</option>
+            <option value="Bihar" ${saved.state === 'Bihar' ? 'selected' : ''}>Bihar</option>
+            <option value="Chhattisgarh" ${saved.state === 'Chhattisgarh' ? 'selected' : ''}>Chhattisgarh</option>
+            <option value="Goa" ${saved.state === 'Goa' ? 'selected' : ''}>Goa</option>
+            <option value="Gujarat" ${saved.state === 'Gujarat' ? 'selected' : ''}>Gujarat</option>
+            <option value="Haryana" ${saved.state === 'Haryana' ? 'selected' : ''}>Haryana</option>
+            <option value="Himachal Pradesh" ${saved.state === 'Himachal Pradesh' ? 'selected' : ''}>Himachal Pradesh</option>
+            <option value="Jharkhand" ${saved.state === 'Jharkhand' ? 'selected' : ''}>Jharkhand</option>
+            <option value="Karnataka" ${saved.state === 'Karnataka' ? 'selected' : ''}>Karnataka</option>
+            <option value="Kerala" ${saved.state === 'Kerala' ? 'selected' : ''}>Kerala</option>
+            <option value="Madhya Pradesh" ${saved.state === 'Madhya Pradesh' ? 'selected' : ''}>Madhya Pradesh</option>
+            <option value="Maharashtra" ${saved.state === 'Maharashtra' ? 'selected' : ''}>Maharashtra</option>
+            <option value="Manipur" ${saved.state === 'Manipur' ? 'selected' : ''}>Manipur</option>
+            <option value="Meghalaya" ${saved.state === 'Meghalaya' ? 'selected' : ''}>Meghalaya</option>
+            <option value="Mizoram" ${saved.state === 'Mizoram' ? 'selected' : ''}>Mizoram</option>
+            <option value="Nagaland" ${saved.state === 'Nagaland' ? 'selected' : ''}>Nagaland</option>
+            <option value="Odisha" ${saved.state === 'Odisha' ? 'selected' : ''}>Odisha</option>
+            <option value="Punjab" ${saved.state === 'Punjab' ? 'selected' : ''}>Punjab</option>
+            <option value="Rajasthan" ${saved.state === 'Rajasthan' ? 'selected' : ''}>Rajasthan</option>
+            <option value="Sikkim" ${saved.state === 'Sikkim' ? 'selected' : ''}>Sikkim</option>
+            <option value="Tamil Nadu" ${saved.state === 'Tamil Nadu' ? 'selected' : ''}>Tamil Nadu</option>
+            <option value="Telangana" ${saved.state === 'Telangana' ? 'selected' : ''}>Telangana</option>
+            <option value="Tripura" ${saved.state === 'Tripura' ? 'selected' : ''}>Tripura</option>
+            <option value="Uttar Pradesh" ${saved.state === 'Uttar Pradesh' ? 'selected' : ''}>Uttar Pradesh</option>
+            <option value="Uttarakhand" ${saved.state === 'Uttarakhand' ? 'selected' : ''}>Uttarakhand</option>
+            <option value="West Bengal" ${saved.state === 'West Bengal' ? 'selected' : ''}>West Bengal</option>
+            <option value="Delhi" ${saved.state === 'Delhi' ? 'selected' : ''}>Delhi</option>
+            <option value="Jammu and Kashmir" ${saved.state === 'Jammu and Kashmir' ? 'selected' : ''}>Jammu and Kashmir</option>
+            <option value="Ladakh" ${saved.state === 'Ladakh' ? 'selected' : ''}>Ladakh</option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+      <button
+        class="btn btn-solid"
+        style="width:100%;justify-content:center;margin-top:10px;"
+        onclick="coSaveAddress()"
+      >
+        Continue to Payment
+      </button>
     `;
-  } else if(coStep===2){
+
+  }
+
+  /* =========================
+     STEP 3 — PAYMENT
+     ========================= */
+
+  else if(coStep === 2){
+
     body.innerHTML = `
-      <label class="pay-option"><input type="radio" name="pay" value="upi" checked> UPI</label>
-      <label class="pay-option"><input type="radio" name="pay" value="card"> Credit / Debit Card</label>
-      <label class="pay-option"><input type="radio" name="pay" value="netbanking"> Net Banking</label>
-      <label class="pay-option"><input type="radio" name="pay" value="cod"> Cash on Delivery</label>
+      <label class="pay-option">
+        <input type="radio" name="pay" value="upi" checked>
+        UPI
+      </label>
+
+      <label class="pay-option">
+        <input type="radio" name="pay" value="card">
+        Credit / Debit Card
+      </label>
+
+      <label class="pay-option">
+        <input type="radio" name="pay" value="netbanking">
+        Net Banking
+      </label>
+
+      <label class="pay-option">
+        <input type="radio" name="pay" value="cod">
+        Cash on Delivery
+      </label>
+
       <div class="coupon-row">
-        <input type="text" id="couponInput" placeholder="Coupon code" value="${appliedCoupon?appliedCoupon.code:''}">
+
+        <input
+          type="text"
+          id="couponInput"
+          placeholder="Coupon code"
+          value="${appliedCoupon ? appliedCoupon.code : ''}"
+        >
+
         <button onclick="applyCoupon()">Apply</button>
+
       </div>
-      <div class="coupon-msg ${couponMsg.type||''}">${couponMsg.text||''}</div>
+
+      <div class="coupon-msg ${couponMsg.type || ''}">
+        ${couponMsg.text || ''}
+      </div>
+
       <div class="order-summary-mini">
-        <div class="row"><span>Subtotal</span><span>${fmt(sub)}</span></div>
-        ${appliedCoupon ? `<div class="row" style="color:var(--forest);"><span>Discount (${appliedCoupon.code})</span><span>−${fmt(discount)}</span></div>` : ''}
-        <div class="row"><span>Shipping</span><span>${shipping===0?'Free':fmt(shipping)}</span></div>
-        <div class="row" style="font-weight:600;border-top:1px solid var(--line);padding-top:8px;margin-top:4px;"><span>Total</span><span>${fmt(total)}</span></div>
+
+        <div class="row">
+          <span>Subtotal</span>
+          <span>${fmt(sub)}</span>
+        </div>
+
+        ${
+          appliedCoupon
+            ? `
+              <div class="row" style="color:var(--forest);">
+                <span>Discount (${appliedCoupon.code})</span>
+                <span>−${fmt(discount)}</span>
+              </div>
+            `
+            : ''
+        }
+
+        <div class="row">
+          <span>Shipping</span>
+          <span>${shipping === 0 ? 'Free' : fmt(shipping)}</span>
+        </div>
+
+        <div
+          class="row"
+          style="font-weight:600;border-top:1px solid var(--line);padding-top:8px;margin-top:4px;"
+        >
+          <span>Total</span>
+          <span>${fmt(total)}</span>
+        </div>
+
       </div>
-      <div class="demo-note">This is a demo checkout. No real payment gateway is connected and no order is actually placed — this shows where UPI / cards / net banking / Razorpay-style integration would go in production. Try coupon code <b>FOREST10</b>.</div>
-      <button class="btn btn-solid" style="width:100%;justify-content:center;margin-top:16px;" onclick="coPlaceOrder()">Place Order — ${fmt(total)}</button>
+
+      <div class="demo-note">
+        Real payment gateway will be connected here next.
+      </div>
+
+      <button
+        class="btn btn-solid"
+        style="width:100%;justify-content:center;margin-top:16px;"
+        onclick="coPlaceOrder()"
+      >
+        Place Order — ${fmt(total)}
+      </button>
     `;
-  } else if(coStep===3){
+
+  }
+
+  /* =========================
+     STEP 4 — CONFIRMATION
+     ========================= */
+
+  else if(coStep === 3){
+
     body.innerHTML = `
       <div class="confirm-wrap">
+
         <div class="ok-badge">✓</div>
-        <h2 style="font-weight:400;margin-bottom:8px;">Order placed (demo)</h2>
-        <p style="color:var(--stone);font-size:13.5px;">Order <b>#${lastOrder?lastOrder.orderNo:''}</b> — a confirmation would normally be emailed to you. Total charged: <b>${lastOrder?fmt(lastOrder.total):''}</b>.</p>
-        <button class="btn btn-dark" style="margin-top:24px;" onclick="closeCheckoutFn()">Continue Browsing</button>
+
+        <h2 style="font-weight:400;margin-bottom:8px;">
+          Order placed
+        </h2>
+
+        <p style="color:var(--stone);font-size:13.5px;">
+          Order
+          <b>#${lastOrder ? lastOrder.orderNo : '—'}</b>
+        </p>
+
+        <p style="color:var(--stone);font-size:13.5px;">
+          Total:
+          <b>${lastOrder ? fmt(lastOrder.total) : '—'}</b>
+        </p>
+
+        <button
+          class="btn btn-dark"
+          style="margin-top:24px;"
+          onclick="closeCheckoutFn()"
+        >
+          Continue Browsing
+        </button>
+
       </div>
     `;
   }
 }
 function coNext(){
+
+  /* =========================
+     INFORMATION → ADDRESS
+     ========================= */
+
   if(coStep === 0){
+
     const phoneInput = document.getElementById('coPhone');
-    const phone = phoneInput ? phoneInput.value.trim() : '';
+
+    const phone = phoneInput
+      ? phoneInput.value.trim()
+      : '';
 
     if(!phone){
       showToast('Please enter your phone number');
@@ -1747,9 +2025,9 @@ function coNext(){
       return;
     }
 
-    const digits = phone.replace(/\D/g, '');
+    const phoneDigits = phone.replace(/\D/g, '');
 
-    if(digits.length !== 10){
+    if(phoneDigits.length !== 10){
       showToast('Please enter a valid 10-digit phone number');
       if(phoneInput) phoneInput.focus();
       return;
@@ -1759,27 +2037,122 @@ function coNext(){
       ...(SAVED_ADDRESS || {}),
       phone: phone
     };
+
+    return renderCheckoutAfterStep();
   }
 
+  /* =========================
+     ADDRESS → PAYMENT
+     ========================= */
+
+  if(coStep === 1){
+
+    const addressInput = document.getElementById('coAddr1');
+    const cityInput = document.getElementById('coCity');
+    const pinInput = document.getElementById('coPin');
+    const stateInput = document.getElementById('coState');
+
+    const address = addressInput
+      ? addressInput.value.trim()
+      : '';
+
+    const city = cityInput
+      ? cityInput.value.trim()
+      : '';
+
+    const pin = pinInput
+      ? pinInput.value.trim()
+      : '';
+
+    const state = stateInput
+      ? stateInput.value.trim()
+      : '';
+
+    if(!address){
+      showToast('Please enter your delivery address');
+      if(addressInput) addressInput.focus();
+      return;
+    }
+
+    if(!city){
+      showToast('Please enter your city');
+      if(cityInput) cityInput.focus();
+      return;
+    }
+
+    if(!state){
+      showToast('Please select your state');
+      if(stateInput) stateInput.focus();
+      return;
+    }
+
+    const pinDigits = pin.replace(/\D/g, '');
+
+    if(pinDigits.length !== 6){
+      showToast('Please enter a valid 6-digit pincode');
+      if(pinInput) pinInput.focus();
+      return;
+    }
+
+    const phone = SAVED_ADDRESS?.phone || '';
+
+    if(!phone){
+      showToast('Please enter your phone number first');
+      coStep = 0;
+      renderCheckout();
+      return;
+    }
+
+    SAVED_ADDRESS = {
+      line1: address,
+      city: city,
+      pin: pinDigits,
+      state: state,
+      phone: phone
+    };
+
+    try{
+      window.storage.set(
+        'fc:address',
+        JSON.stringify(SAVED_ADDRESS)
+      );
+    }catch(e){
+      console.warn('Address save failed:', e);
+    }
+
+    return renderCheckoutAfterStep();
+  }
+}
+  function renderCheckoutAfterStep(){
   coStep++;
   renderCheckout();
 }
 function coSaveAddress(){
-  const line1Input = document.getElementById('coAddr1');
+
+  const addressInput = document.getElementById('coAddr1');
   const cityInput = document.getElementById('coCity');
   const pinInput = document.getElementById('coPin');
   const stateInput = document.getElementById('coState');
 
-  const line1 = line1Input ? line1Input.value.trim() : '';
-  const city = cityInput ? cityInput.value.trim() : '';
-  const pin = pinInput ? pinInput.value.trim() : '';
-  const state = stateInput ? stateInput.value.trim() : '';
+  const address = addressInput
+    ? addressInput.value.trim()
+    : '';
 
-  const phone = SAVED_ADDRESS?.phone || '';
+  const city = cityInput
+    ? cityInput.value.trim()
+    : '';
 
-  if(!line1){
-    showToast('Please enter your address');
-    if(line1Input) line1Input.focus();
+  const pin = pinInput
+    ? pinInput.value.trim()
+    : '';
+
+  const state = stateInput
+    ? stateInput.value.trim()
+    : '';
+
+  if(!address){
+    showToast('Please enter your delivery address');
+    if(addressInput) addressInput.focus();
     return;
   }
 
@@ -1789,23 +2162,21 @@ function coSaveAddress(){
     return;
   }
 
-  if(!pin){
-    showToast('Please enter your pincode');
-    if(pinInput) pinInput.focus();
+  if(!state){
+    showToast('Please select your state');
+    if(stateInput) stateInput.focus();
     return;
   }
 
-  if(!/^\d{6}$/.test(pin)){
+  const pinDigits = pin.replace(/\D/g, '');
+
+  if(pinDigits.length !== 6){
     showToast('Please enter a valid 6-digit pincode');
     if(pinInput) pinInput.focus();
     return;
   }
 
-  if(!state){
-    showToast('Please enter your state');
-    if(stateInput) stateInput.focus();
-    return;
-  }
+  const phone = SAVED_ADDRESS?.phone || '';
 
   if(!phone){
     showToast('Please enter your phone number first');
@@ -1815,11 +2186,11 @@ function coSaveAddress(){
   }
 
   SAVED_ADDRESS = {
-    line1,
-    city,
-    pin,
-    state,
-    phone
+    line1: address,
+    city: city,
+    pin: pinDigits,
+    state: state,
+    phone: phone
   };
 
   try{
@@ -1827,11 +2198,13 @@ function coSaveAddress(){
       'fc:address',
       JSON.stringify(SAVED_ADDRESS)
     );
-  }catch(e){}
+  }catch(e){
+    console.warn('Could not save address:', e);
+  }
 
-  coStep++;
+  coStep = 2;
   renderCheckout();
-}
+}=
 async function coPlaceOrder(){
   if(!USER){
     showToast('Please log in before placing an order');
