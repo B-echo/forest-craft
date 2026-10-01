@@ -1739,10 +1739,25 @@ function renderCheckout(){
 function coNext(){
   if(coStep === 0){
     const phoneInput = document.getElementById('coPhone');
+    const phone = phoneInput ? phoneInput.value.trim() : '';
+
+    if(!phone){
+      showToast('Please enter your phone number');
+      if(phoneInput) phoneInput.focus();
+      return;
+    }
+
+    const digits = phone.replace(/\D/g, '');
+
+    if(digits.length !== 10){
+      showToast('Please enter a valid 10-digit phone number');
+      if(phoneInput) phoneInput.focus();
+      return;
+    }
 
     SAVED_ADDRESS = {
       ...(SAVED_ADDRESS || {}),
-      phone: phoneInput ? phoneInput.value.trim() : ''
+      phone: phone
     };
   }
 
@@ -1750,15 +1765,72 @@ function coNext(){
   renderCheckout();
 }
 function coSaveAddress(){
+  const line1Input = document.getElementById('coAddr1');
+  const cityInput = document.getElementById('coCity');
+  const pinInput = document.getElementById('coPin');
+  const stateInput = document.getElementById('coState');
+
+  const line1 = line1Input ? line1Input.value.trim() : '';
+  const city = cityInput ? cityInput.value.trim() : '';
+  const pin = pinInput ? pinInput.value.trim() : '';
+  const state = stateInput ? stateInput.value.trim() : '';
+
+  const phone = SAVED_ADDRESS?.phone || '';
+
+  if(!line1){
+    showToast('Please enter your address');
+    if(line1Input) line1Input.focus();
+    return;
+  }
+
+  if(!city){
+    showToast('Please enter your city');
+    if(cityInput) cityInput.focus();
+    return;
+  }
+
+  if(!pin){
+    showToast('Please enter your pincode');
+    if(pinInput) pinInput.focus();
+    return;
+  }
+
+  if(!/^\d{6}$/.test(pin)){
+    showToast('Please enter a valid 6-digit pincode');
+    if(pinInput) pinInput.focus();
+    return;
+  }
+
+  if(!state){
+    showToast('Please enter your state');
+    if(stateInput) stateInput.focus();
+    return;
+  }
+
+  if(!phone){
+    showToast('Please enter your phone number first');
+    coStep = 0;
+    renderCheckout();
+    return;
+  }
+
   SAVED_ADDRESS = {
-    line1: document.getElementById('coAddr1').value,
-    city: document.getElementById('coCity').value,
-    pin: document.getElementById('coPin').value,
-    state: document.getElementById('coState').value,
-    phone: document.getElementById('coPhone') ? document.getElementById('coPhone').value : (SAVED_ADDRESS&&SAVED_ADDRESS.phone) || ''
+    line1,
+    city,
+    pin,
+    state,
+    phone
   };
-  try{ window.storage.set('fc:address', JSON.stringify(SAVED_ADDRESS)); }catch(e){}
-  coNext();
+
+  try{
+    window.storage.set(
+      'fc:address',
+      JSON.stringify(SAVED_ADDRESS)
+    );
+  }catch(e){}
+
+  coStep++;
+  renderCheckout();
 }
 async function coPlaceOrder(){
   if(!USER){
