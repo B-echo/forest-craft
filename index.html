@@ -545,6 +545,7 @@ footer{background:var(--ink); color:rgba(243,236,220,0.72); padding:80px 0 30px;
 .skip-link:focus{left:12px; top:12px;}
 :focus-visible{outline:2px solid var(--coral); outline-offset:2px;}
 </style>
+<link rel="stylesheet" href="forestcraft-design.css">
 </head>
 <body>
 
@@ -1346,6 +1347,7 @@ const FC5_ASSETS = {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
 const FC_SUPABASE_URL = 'https://pjjdrrlkhkpjevmumvuf.supabase.co';
 
@@ -2413,88 +2415,136 @@ function renderCheckout(){
   else if(coStep === 2){
 
     body.innerHTML = `
-      <label class="pay-option">
-        <input type="radio" name="pay" value="upi" checked>
-        UPI
-      </label>
 
-      <label class="pay-option">
-        <input type="radio" name="pay" value="card">
-        Credit / Debit Card
-      </label>
+  <div style="
+    padding:18px;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,0.025);
+    margin-bottom:18px;
+  ">
 
-      <label class="pay-option">
-        <input type="radio" name="pay" value="netbanking">
-        Net Banking
-      </label>
+    <div
+      class="eyebrow"
+      style="display:block;margin-bottom:8px;"
+    >
+      SECURE PAYMENT
+    </div>
 
-      <label class="pay-option">
-        <input type="radio" name="pay" value="cod">
-        Cash on Delivery
-      </label>
+    <h3 style="
+      font-weight:400;
+      margin-bottom:8px;
+    ">
+      Pay securely with Razorpay
+    </h3>
 
-      <div class="coupon-row">
+    <p style="
+      color:var(--stone);
+      font-size:13px;
+      line-height:1.6;
+      margin:0;
+    ">
+      UPI, credit/debit cards, net banking and other
+      supported payment methods are securely handled
+      by Razorpay.
+    </p>
 
-        <input
-          type="text"
-          id="couponInput"
-          placeholder="Coupon code"
-          value="${appliedCoupon ? appliedCoupon.code : ''}"
-        >
+  </div>
 
-        <button onclick="applyCoupon()">Apply</button>
+  <div class="coupon-row">
 
-      </div>
+    <input
+      type="text"
+      id="couponInput"
+      placeholder="Coupon code"
+      value="${appliedCoupon ? appliedCoupon.code : ''}"
+    >
 
-      <div class="coupon-msg ${couponMsg.type || ''}">
-        ${couponMsg.text || ''}
-      </div>
+    <button onclick="applyCoupon()">
+      Apply
+    </button>
 
-      <div class="order-summary-mini">
+  </div>
 
-        <div class="row">
-          <span>Subtotal</span>
-          <span>${fmt(sub)}</span>
-        </div>
+  <div class="coupon-msg ${couponMsg.type || ''}">
+    ${couponMsg.text || ''}
+  </div>
 
-        ${
-          appliedCoupon
-            ? `
-              <div class="row" style="color:var(--forest);">
-                <span>Discount (${appliedCoupon.code})</span>
-                <span>−${fmt(discount)}</span>
-              </div>
-            `
-            : ''
-        }
+  <div class="order-summary-mini">
 
-        <div class="row">
-          <span>Shipping</span>
-          <span>${shipping === 0 ? 'Free' : fmt(shipping)}</span>
-        </div>
+    <div class="row">
+      <span>Subtotal</span>
+      <span>${fmt(sub)}</span>
+    </div>
 
-        <div
-          class="row"
-          style="font-weight:600;border-top:1px solid var(--line);padding-top:8px;margin-top:4px;"
-        >
-          <span>Total</span>
-          <span>${fmt(total)}</span>
-        </div>
+    ${
+      appliedCoupon
+        ? `
+          <div
+            class="row"
+            style="color:var(--forest);"
+          >
+            <span>
+              Discount (${appliedCoupon.code})
+            </span>
 
-      </div>
+            <span>
+              −${fmt(discount)}
+            </span>
+          </div>
+        `
+        : ''
+    }
 
-      <div class="demo-note">
-        Real payment gateway will be connected here next.
-      </div>
+    <div class="row">
+      <span>Shipping</span>
 
-      <button
-        class="btn btn-solid"
-        style="width:100%;justify-content:center;margin-top:16px;"
-        onclick="coPlaceOrder()"
-      >
-        Place Order — ${fmt(total)}
-      </button>
-    `;
+      <span>
+        ${shipping === 0 ? 'Free' : fmt(shipping)}
+      </span>
+    </div>
+
+    <div
+      class="row"
+      style="
+        font-weight:600;
+        border-top:1px solid var(--line);
+        padding-top:8px;
+        margin-top:4px;
+      "
+    >
+      <span>Total</span>
+
+      <span>
+        ${fmt(total)}
+      </span>
+    </div>
+
+  </div>
+
+  <div style="
+    margin-top:14px;
+    color:var(--stone);
+    font-size:11.5px;
+    line-height:1.5;
+    text-align:center;
+  ">
+    You will be redirected to the secure Razorpay
+    payment window after clicking the button below.
+  </div>
+
+  <button
+    class="btn btn-solid"
+    style="
+      width:100%;
+      justify-content:center;
+      margin-top:16px;
+    "
+    onclick="coPlaceOrder()"
+  >
+    Pay Securely
+  </button>
+
+`;
 
   }
 
@@ -2736,6 +2786,7 @@ function coSaveAddress(){
   renderCheckout();
 }
 async function coPlaceOrder(){
+
   if(!USER){
     showToast('Please log in before placing an order');
     openAuth();
@@ -2747,115 +2798,393 @@ async function coPlaceOrder(){
     return;
   }
 
-  const sub = cartSubtotal();
-  const discount = appliedCoupon
-    ? Math.round(sub * appliedCoupon.pct)
-    : 0;
+  if(!SAVED_ADDRESS){
+    showToast('Please enter your delivery address first');
+    coStep = 1;
+    renderCheckout();
+    return;
+  }
 
-  const shipping = (sub - discount) > 2000 ? 0 : 99;
-  const total = sub - discount + shipping;
+  const paymentChoice =
+    document.querySelector('input[name="pay"]:checked')?.value || 'upi';
 
-  const orderNumber =
-    'FC' + Math.floor(100000 + Math.random() * 900000);
+  if(paymentChoice === 'cod'){
+    showToast('Cash on Delivery is not available yet');
+    return;
+  }
 
-  const shippingAddress = SAVED_ADDRESS
-  ? {
-      line1: SAVED_ADDRESS.line1 || '',
-      city: SAVED_ADDRESS.city || '',
-      pin: SAVED_ADDRESS.pin || '',
-      state: SAVED_ADDRESS.state || '',
-      phone: SAVED_ADDRESS.phone || ''
-    }
-  : null;
+  const cartSnapshot = CART.map(c => ({
+    id: c.id,
+    name: c.name,
+    qty: c.qty,
+    price: c.price,
+    color: c.color || null
+  }));
+
+  const shippingAddress = {
+    line1: SAVED_ADDRESS.line1 || '',
+    city: SAVED_ADDRESS.city || '',
+    pin: SAVED_ADDRESS.pin || '',
+    state: SAVED_ADDRESS.state || '',
+    phone: SAVED_ADDRESS.phone || ''
+  };
+
+  if(
+    !shippingAddress.line1 ||
+    !shippingAddress.city ||
+    !shippingAddress.state ||
+    !shippingAddress.pin ||
+    !shippingAddress.phone
+  ){
+    showToast('Please complete your delivery address');
+    coStep = 1;
+    renderCheckout();
+    return;
+  }
+
+  const button = document.querySelector(
+    'button[onclick="coPlaceOrder()"]'
+  );
+
+  if(button){
+    button.disabled = true;
+    button.dataset.originalText = button.innerHTML;
+    button.innerHTML = 'Preparing secure payment…';
+  }
 
   try{
-    // 1. Create the order
-    const { data: order, error: orderError } = await fcSupabase
-      .from('orders')
-      .insert({
-        user_id: USER.id,
-        order_number: orderNumber,
-        status: 'placed',
-        payment_status: 'pending',
-        currency: 'INR',
-        subtotal: sub,
-        discount: discount,
-        shipping_fee: shipping,
-        total: total,
-        coupon_code: appliedCoupon ? appliedCoupon.code : null,
-        shipping_address: shippingAddress
-      })
-      .select()
-      .single();
 
-    if(orderError){
-      console.error('Order creation error:', orderError);
-      showToast('Could not place your order');
-      return;
-    }
+    /*
+     * IMPORTANT:
+     * We send ONLY product IDs, quantities and selected colors.
+     *
+     * We do NOT send:
+     * - browser prices
+     * - browser subtotal
+     * - browser discount
+     * - browser shipping
+     * - browser total
+     *
+     * The create-order Edge Function calculates all money values
+     * from the trusted database.
+     */
 
-    // 2. Create order items
-    const orderItems = CART.map(c => ({
-      order_id: order.id,
-      user_id: USER.id,
-      product_id: c.id,
-      product_name: c.name,
-      color: c.color || null,
-      quantity: c.qty,
-      unit_price: c.price,
-      line_total: c.price * c.qty
+    const items = cartSnapshot.map(item => ({
+      product_id: item.id,
+      quantity: item.qty,
+      color: item.color
     }));
 
-    const { error: itemsError } = await fcSupabase
-      .from('order_items')
-      .insert(orderItems);
+    // 1. Ask the secure server to create the order
+    const {
+      data,
+      error
+    } = await fcSupabase.functions.invoke(
+      'create-order',
+      {
+        body: {
+          items,
+          shipping_address: shippingAddress
+        }
+      }
+    );
 
-    if(itemsError){
-      console.error('Order items error:', itemsError);
-      showToast('Order could not be completed');
+    if(error){
+      console.error('create-order error:', error);
+      showToast(
+        error.message || 'Could not prepare your payment'
+      );
       return;
     }
 
-    // 3. Clear the customer's cloud cart
-    const { error: cartError } = await fcSupabase
-      .from('cart_items')
-      .delete()
-      .eq('user_id', USER.id);
-
-    if(cartError){
-      console.error('Cart clearing error:', cartError);
-      showToast('Order placed, but your bag could not be cleared');
+    if(!data){
+      console.error('create-order returned no data');
+      showToast('Could not prepare your payment');
       return;
     }
 
-    // 4. Prepare the confirmation screen
-    lastOrder = {
-      orderNo: order.order_number,
-      date: order.created_at,
-      items: CART.map(c => ({
-        name: c.name,
-        qty: c.qty,
-        price: c.price
-      })),
-      total: order.total,
-      coupon: appliedCoupon ? appliedCoupon.code : null
+    if(
+      !data.razorpay_order_id ||
+      !data.order_id ||
+      !data.amount ||
+      !data.key_id
+    ){
+      console.error(
+        'Invalid create-order response:',
+        data
+      );
+
+      showToast(
+        'Payment could not be initialized'
+      );
+
+      return;
+    }
+
+    // 2. Open Razorpay Checkout
+    if(typeof Razorpay === 'undefined'){
+      console.error('Razorpay Checkout library is not loaded');
+      showToast(
+        'Payment gateway could not be loaded. Please refresh and try again.'
+      );
+      return;
+    }
+
+    const razorpayOptions = {
+
+      key: data.key_id,
+
+      amount: data.amount,
+
+      currency: data.currency || 'INR',
+
+      name: 'Forest Craft',
+
+      description:
+        `Order ${data.order_number}`,
+
+      order_id:
+        data.razorpay_order_id,
+
+      prefill: {
+        name:
+          USER.user_metadata?.full_name ||
+          USER.user_metadata?.name ||
+          '',
+
+        email:
+          data.customer_email ||
+          USER.email ||
+          '',
+
+        contact:
+          shippingAddress.phone ||
+          ''
+      },
+
+      notes: {
+        order_number:
+          data.order_number
+      },
+
+      theme: {
+        color: '#6b4f2a'
+      },
+
+      handler: async function(response){
+
+        console.log(
+          'Razorpay payment response received'
+        );
+
+        /*
+         * IMPORTANT:
+         * Do NOT mark the order paid here.
+         *
+         * Razorpay's browser response is sent to our
+         * verify-payment Edge Function.
+         */
+
+        try{
+
+          const {
+            data: verificationData,
+            error: verificationError
+          } = await fcSupabase.functions.invoke(
+            'verify-payment',
+            {
+              body: {
+                razorpay_order_id:
+                  response.razorpay_order_id,
+
+                razorpay_payment_id:
+                  response.razorpay_payment_id,
+
+                razorpay_signature:
+                  response.razorpay_signature
+              }
+            }
+          );
+
+          if(verificationError){
+
+            console.error(
+              'Payment verification error:',
+              verificationError
+            );
+
+            showToast(
+              'Payment verification failed. Your cart has been kept safe.'
+            );
+
+            return;
+          }
+
+          if(
+            !verificationData ||
+            !verificationData.verified
+          ){
+
+            console.error(
+              'Payment was not verified:',
+              verificationData
+            );
+
+            showToast(
+              'Payment could not be verified. Your cart has been kept safe.'
+            );
+
+            return;
+          }
+
+          // 3. Payment is now verified by the server
+
+          lastOrder = {
+            orderNo:
+              verificationData.order_number ||
+              data.order_number,
+
+            date:
+              verificationData.paid_at ||
+              new Date().toISOString(),
+
+            items:
+              cartSnapshot.map(item => ({
+                name: item.name,
+                qty: item.qty,
+                price: item.price
+              })),
+
+            total:
+              verificationData.total ??
+              (data.amount / 100),
+
+            coupon:
+              verificationData.coupon_code ||
+              null
+          };
+
+          // 4. Only NOW clear the cloud cart
+
+          const {
+            error: cartError
+          } = await fcSupabase
+            .from('cart_items')
+            .delete()
+            .eq('user_id', USER.id);
+
+          if(cartError){
+
+            console.error(
+              'Cloud cart clearing error:',
+              cartError
+            );
+
+            /*
+             * Do NOT treat this as a payment failure.
+             *
+             * The payment has already been verified.
+             * The user's order is safe.
+             */
+
+            showToast(
+              'Payment successful, but your bag could not be cleared automatically.'
+            );
+
+          }
+
+          // 5. Clear frontend cart state
+
+          CART = [];
+
+          appliedCoupon = null;
+
+          couponMsg = {};
+
+          renderCounts();
+
+          renderCart();
+
+          // 6. Show confirmation
+
+          coStep = 3;
+
+          renderCheckout();
+
+          showToast(
+            'Payment successful'
+          );
+
+        }catch(verifyError){
+
+          console.error(
+            'Payment verification exception:',
+            verifyError
+          );
+
+          showToast(
+            'Payment verification failed. Your cart has been kept safe.'
+          );
+
+        }
+
+      }
+
     };
 
-    // 5. Clear frontend cart state
-    CART = [];
-    appliedCoupon = null;
-    couponMsg = {};
+    const razorpay =
+      new Razorpay(razorpayOptions);
 
-    renderCounts();
-    renderCart();
+    razorpay.on(
+      'payment.failed',
+      function(response){
 
-    // 6. Move checkout to confirmation
-    coStep = 3;
-    renderCheckout();
+        console.error(
+          'Razorpay payment failed:',
+          response
+        );
+
+        const reason =
+          response?.error?.description ||
+          'Payment failed';
+
+        showToast(reason);
+
+        /*
+         * IMPORTANT:
+         * Do NOT clear the cart.
+         *
+         * The customer can try again.
+         */
+
+      }
+    );
+
+    razorpay.open();
 
   }catch(error){
-    console.error('Place order error:', error);
-    showToast('Something went wrong while placing your order');
+
+    console.error(
+      'Secure checkout error:',
+      error
+    );
+
+    showToast(
+      'Something went wrong while starting payment'
+    );
+
+  }finally{
+
+    if(button){
+
+      button.disabled = false;
+
+      button.innerHTML =
+        button.dataset.originalText ||
+        'Place Order';
+
+    }
+
   }
 }
 let lastOrder = null;
