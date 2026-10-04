@@ -2877,17 +2877,20 @@ async function coPlaceOrder(){
 
     // 1. Ask the secure server to create the order
     const {
-      data,
-      error
-    } = await fcSupabase.functions.invoke(
-      'create-order',
-      {
-        body: {
-          items,
-          shipping_address: shippingAddress
-        }
-      }
-    );
+  data,
+  error
+} = await fcSupabase.functions.invoke(
+  'create-order',
+  {
+    body: {
+      items,
+      shippingAddress,
+      couponCode: appliedCoupon
+        ? appliedCoupon.code
+        : ''
+    }
+  }
+);
 
     if(error){
       console.error('create-order error:', error);
