@@ -1551,17 +1551,20 @@ footer{
 }
 
 #opening .minimal-lotus{
-  animation:lotusReferenceBreath 8s ease-in-out infinite;
+  animation:lotusReferenceBreath 6.5s ease-in-out infinite;
+  will-change:transform,opacity,filter;
 }
 
 @keyframes lotusReferenceBreath{
   0%,100%{
-    opacity:.27;
-    transform:translate(-50%,-50%) scale(.985);
+    opacity:.26;
+    transform:translate(-50%,-50%) scale(.98);
+    filter:drop-shadow(0 0 10px rgba(215,173,80,.09)) drop-shadow(0 0 24px rgba(100,26,20,.12));
   }
   50%{
-    opacity:.33;
-    transform:translate(-50%,-50%) scale(1.01);
+    opacity:.37;
+    transform:translate(-50%,-50%) scale(1.035);
+    filter:drop-shadow(0 0 16px rgba(215,173,80,.19)) drop-shadow(0 0 30px rgba(100,26,20,.15));
   }
 }
 
@@ -2135,13 +2138,29 @@ body.fc-route-active > footer{display:none !important;}
   opacity:.15;
   object-fit:contain;
   pointer-events:none;
+  transform-origin:50% 50%;
   mix-blend-mode:screen;
-  filter:saturate(.82) brightness(.82) drop-shadow(0 0 12px rgba(201,164,92,.07));
-  animation:fcGoldenLotusGlow 8s ease-in-out infinite;
+  filter:saturate(.82) brightness(.82)
+    drop-shadow(0 0 10px rgba(201,164,92,.07))
+    drop-shadow(0 0 22px rgba(201,164,92,.035));
+  animation:fcGoldenLotusGlow 12s ease-in-out infinite;
+  will-change:transform,opacity,filter;
 }
 @keyframes fcGoldenLotusGlow {
-  0%,100% { opacity:.12; transform:translate(-50%,-50%) scale(.99); }
-  50% { opacity:.18; transform:translate(-50%,-50%) scale(1.01); }
+  0%,100% {
+    opacity:.135;
+    transform:translate(-50%,-50%) scale(1);
+    filter:saturate(.82) brightness(.82)
+      drop-shadow(0 0 10px rgba(201,164,92,.06))
+      drop-shadow(0 0 22px rgba(201,164,92,.025));
+  }
+  50% {
+    opacity:.17;
+    transform:translate(-50%,-50%) scale(1.04);
+    filter:saturate(.86) brightness(.87)
+      drop-shadow(0 0 14px rgba(201,164,92,.105))
+      drop-shadow(0 0 28px rgba(201,164,92,.05));
+  }
 }
 @media(max-width:700px) {
   #opening .golden-lotus {
@@ -2151,7 +2170,12 @@ body.fc-route-active > footer{display:none !important;}
   }
 }
 @media(prefers-reduced-motion:reduce) {
-  #opening .golden-lotus { animation:none; opacity:.14; }
+  #opening .golden-lotus {
+    animation:none;
+    opacity:.14;
+    transform:translate(-50%,-50%);
+    will-change:auto;
+  }
 }
 </style>
 
@@ -2512,7 +2536,7 @@ const FC5_ASSETS = {
 
 
 <div id="mobile-nav">
-  <button class="close-x" id="closeMobileNav" aria-label="Close menu">&times;</button>
+  <button class="close-x" id="closeMobileNav">&times;</button>
   <a href="#shop-page" data-route="shop">Shop</a>
   <a href="#collections-page" data-route="collections">Collections</a>
   <a href="#craft-page" data-route="craft">Craft</a>
@@ -2867,11 +2891,10 @@ const FC5_ASSETS = {
 </footer>
 
 <!-- ============ SEARCH OVERLAY ============ -->
-<div id="search-overlay" role="dialog" aria-label="Search" aria-modal="true">
-  <button class="search-close" id="closeSearch" aria-label="Close search">&times;</button>
+<div id="search-overlay">
+  <button class="search-close" id="closeSearch">&times;</button>
   <div class="search-box-wrap">
-    <input type="text" id="searchInput" placeholder="Search shawls, brass, copper…" autocomplete="off" aria-label="Search products">
-    <div class="search-meta" id="searchMeta" aria-live="polite"></div>
+    <input type="text" id="searchInput" placeholder="Search shawls, brass, copper…" autocomplete="off">
     <div class="search-chips" id="searchChips"></div>
     <div class="search-results" id="searchResults"></div>
   </div>
@@ -2880,7 +2903,7 @@ const FC5_ASSETS = {
 <!-- ============ CART DRAWER ============ -->
 <div class="drawer-overlay" id="cartOverlay"></div>
 <div class="drawer" id="cartDrawer">
-  <div class="drawer-head"><h3>Your Bag</h3><button id="closeCart" aria-label="Close bag">&times;</button></div>
+  <div class="drawer-head"><h3>Your Bag</h3><button id="closeCart">&times;</button></div>
   <div class="drawer-body" id="cartBody"></div>
   <div class="drawer-foot" id="cartFoot"></div>
 </div>
@@ -2888,7 +2911,7 @@ const FC5_ASSETS = {
 <!-- ============ WISHLIST DRAWER ============ -->
 <div class="drawer-overlay" id="wishOverlay"></div>
 <div class="drawer" id="wishDrawer">
-  <div class="drawer-head"><h3>Wishlist</h3><button id="closeWish" aria-label="Close wishlist">&times;</button></div>
+  <div class="drawer-head"><h3>Wishlist</h3><button id="closeWish">&times;</button></div>
   <div class="drawer-body" id="wishBody"></div>
 </div>
   <!-- ========== CART CONFIRMATION MODAL ========== -->
@@ -2921,7 +2944,7 @@ const FC5_ASSETS = {
 <!-- ============ QUICKVIEW MODAL ============ -->
 <div class="modal-overlay" id="qvOverlay">
   <div class="modal-box" id="qvBox" style="max-width:960px;">
-    <button class="modal-close" id="qvClose" aria-label="Close product details">&times;</button>
+    <button class="modal-close" id="qvClose">&times;</button>
     <div class="qv-grid" id="qvContent"></div>
   </div>
 </div>
@@ -2929,7 +2952,7 @@ const FC5_ASSETS = {
 <!-- ============ CHECKOUT MODAL ============ -->
 <div class="modal-overlay" id="coOverlay">
   <div class="modal-box" id="coBox" style="max-width:640px;">
-    <button class="modal-close" id="coClose" aria-label="Close checkout">&times;</button>
+    <button class="modal-close" id="coClose">&times;</button>
     <div class="co-steps" id="coSteps"></div>
     <div class="co-body" id="coBody"></div>
   </div>
@@ -3112,31 +3135,10 @@ async function loadState(){
   try{ const r = await window.storage.get('fc:orders'); ORDERS = r ? JSON.parse(r.value) : []; }catch(e){ ORDERS = []; }
   try{ const r = await window.storage.get('fc:address'); SAVED_ADDRESS = r ? JSON.parse(r.value) : null; }catch(e){ SAVED_ADDRESS = null; }
   try{ const r = await window.storage.get('fc:recent'); RECENTLY_VIEWED = r ? JSON.parse(r.value) : []; }catch(e){ RECENTLY_VIEWED = []; }
-  if(!USER){ loadGuestCart(); loadGuestWishlist(); }
   renderCounts(); renderCart(); renderWishlist(); renderRecentlyViewedStrip();
 }
-function saveGuestCart(){ try{ window.storage.set('fc:guest-cart', JSON.stringify(CART)); }catch(e){} }
-function saveGuestWishlist(){ try{ window.storage.set('fc:guest-wishlist', JSON.stringify(WISHLIST)); }catch(e){} }
-function loadGuestCart(){
-  try{
-    const raw = JSON.parse(window.storage.get('fc:guest-cart') || '[]');
-    if(Array.isArray(raw)){
-      CART = raw.filter(i => i && i.id && PRODUCTS.some(p => p.id === i.id) && Number.isFinite(i.qty) && i.qty > 0).slice(0, 100);
-    }
-  }catch(e){}
-}
-function loadGuestWishlist(){
-  try{
-    const raw = JSON.parse(window.storage.get('fc:guest-wishlist') || '[]');
-    if(Array.isArray(raw)){
-      WISHLIST = raw.filter(w => w && w.id && PRODUCTS.some(p => p.id === w.id)).map(w => ({
-        id: w.id, name: w.name, price: w.price, image: w.image, cat: w.cat
-      })).slice(0, 200);
-    }
-  }catch(e){}
-}
 async function saveCart(){
-  if(!USER){ saveGuestCart(); return; }
+  if(!USER) return;
 
   try{
     await fcSupabase
@@ -3183,7 +3185,7 @@ const fmt = n => '₹' + n.toLocaleString('en-IN');
 
 async function loadCloudCart(){
   if(!USER){
-    loadGuestCart();
+    CART = [];
     renderCounts();
     renderCart();
     return;
@@ -3223,45 +3225,23 @@ async function loadCloudCart(){
 
 
 async function addToCart(product, color, qty){
-  qty = Math.max(1, Math.min(Number(qty) || 1, 9));
-
-  const selectedColor = color || product.colors[0];
-
-  const stock = stockFor(product.id);
-  if(stock <= 0){
-    showToast('This item is currently out of stock');
+  if(!USER){
+    showToast('Please log in to add items to your bag');
+    openAuthModal();
     return;
   }
+
+  qty = qty || 1;
+
+  const selectedColor = color || product.colors[0];
 
   const existing = CART.find(
     c => c.id === product.id && c.color === selectedColor
   );
 
-  if(!USER){
-    if(existing){
-      existing.qty = Math.min(existing.qty + qty, stock);
-      showToast(existing.qty >= stock ? 'Only ' + stock + ' in stock' : product.name + ' added to your bag');
-    }else{
-      CART.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.images[0],
-        color: selectedColor,
-        cat: product.cat,
-        qty: Math.min(qty, stock)
-      });
-      showToast(product.name + ' added to your bag');
-    }
-    saveGuestCart();
-    renderCounts();
-    renderCart();
-    return;
-  }
-
   if(existing){
 
-    const newQty = Math.min(existing.qty + qty, stock);
+    const newQty = existing.qty + qty;
 
     const { error } = await fcSupabase
       .from('cart_items')
@@ -3317,15 +3297,7 @@ async function addToCart(product, color, qty){
 
 async function removeFromCart(id, color){
 
-  if(!USER){
-    CART = CART.filter(
-      c => !(c.id === id && c.color === color)
-    );
-    saveGuestCart();
-    renderCounts();
-    renderCart();
-    return;
-  }
+  if(!USER) return;
 
   const { error } = await fcSupabase
     .from('cart_items')
@@ -3462,6 +3434,8 @@ async function moveCartToWishlist(id, color){
 
 async function changeQty(id, color, delta){
 
+  if(!USER) return;
+
   const row = CART.find(
     c => c.id === id && c.color === color
   );
@@ -3471,21 +3445,7 @@ async function changeQty(id, color, delta){
   const newQty = row.qty + delta;
 
   if(newQty <= 0){
-    removeFromCart(id, color);
-    return;
-  }
-
-  const stock = stockFor(id);
-  if(stock > 0 && newQty > stock){
-    showToast('Only ' + stock + ' in stock');
-    return;
-  }
-
-  if(!USER){
-    row.qty = newQty;
-    saveGuestCart();
-    renderCounts();
-    renderCart();
+    await removeFromCart(id, color);
     return;
   }
 
@@ -3522,7 +3482,7 @@ function cartSubtotal(){
 
 async function loadCloudWishlist(){
   if(!USER){
-    loadGuestWishlist();
+    WISHLIST = [];
     renderCounts();
     renderWishlist();
     renderProductGrid();
@@ -3559,28 +3519,13 @@ async function loadCloudWishlist(){
 
 
 async function toggleWishlist(product){
-  const alreadySaved = WISHLIST.some(w => w.id === product.id);
-
   if(!USER){
-    if(alreadySaved){
-      WISHLIST = WISHLIST.filter(w => w.id !== product.id);
-      showToast('Removed from wishlist');
-    }else{
-      WISHLIST.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.images[0],
-        cat: product.cat
-      });
-      showToast('Added to wishlist');
-    }
-    saveGuestWishlist();
-    renderCounts();
-    renderWishlist();
-    renderProductGrid();
+    showToast('Please log in to save your wishlist');
+    openAuthModal();
     return;
   }
+
+  const alreadySaved = WISHLIST.some(w => w.id === product.id);
 
   if(alreadySaved){
 
@@ -3786,9 +3731,9 @@ function renderQuickView(){
       <div class="color-swatches">${p.colors.map((c,i)=>`<span class="swatch ${i===qvColorIdx?'active':''}" style="background:${c}" onclick="qvColorIdx=${i};renderQuickView()"></span>`).join('')}</div>
       <div style="display:flex;align-items:center;gap:16px;">
         <div class="qty-stepper">
-          <button onclick="qvQty=Math.max(1,qvQty-1);renderQuickView()" aria-label="Decrease quantity">−</button>
+          <button onclick="qvQty=Math.max(1,qvQty-1);renderQuickView()">−</button>
           <span>${qvQty}</span>
-          <button onclick="qvQty=Math.min(${stockFor(p.id)},qvQty+1);renderQuickView()" aria-label="Increase quantity">+</button>
+          <button onclick="qvQty++;renderQuickView()">+</button>
         </div>
       </div>
       <div class="qv-actions">
@@ -3811,26 +3756,13 @@ function renderQuickView(){
 }
 
 /* ---------- cart drawer ---------- */
-function lockScroll(){ document.body.style.overflow='hidden'; }
-function unlockScroll(){ if(!document.querySelector('.modal-overlay.open, #search-overlay.open, .drawer.open, .drawer-overlay.open, #mobile-nav.open')) document.body.style.overflow=''; }
-function openCart(){ document.getElementById('cartOverlay').classList.add('open'); document.getElementById('cartDrawer').classList.add('open'); lockScroll(); }
-function closeCartFn(){ document.getElementById('cartOverlay').classList.remove('open'); document.getElementById('cartDrawer').classList.remove('open'); unlockScroll(); }
+function openCart(){ document.getElementById('cartOverlay').classList.add('open'); document.getElementById('cartDrawer').classList.add('open'); }
+function closeCartFn(){ document.getElementById('cartOverlay').classList.remove('open'); document.getElementById('cartDrawer').classList.remove('open'); }
 function renderCart(){
   const body = document.getElementById('cartBody');
   const foot = document.getElementById('cartFoot');
   if(CART.length===0){
-    body.innerHTML = `<div class="drawer-empty">
-      <svg class="empty-illustration" viewBox="0 0 120 120" aria-hidden="true">
-        <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(201,164,92,.25)" stroke-width="1.5"/>
-        <path d="M38 52h44l-4.5 32a4 4 0 0 1-4 3.4H46.5a4 4 0 0 1-4-3.4L38 52z" fill="none" stroke="#c9a45c" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M48 52c0-7 5.4-12 12-12s12 5 12 12" fill="none" stroke="#c9a45c" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="52" cy="66" r="2.4" fill="#c9a45c"/>
-        <circle cx="68" cy="66" r="2.4" fill="#c9a45c"/>
-      </svg>
-      <p>Your bag is empty.</p>
-      <p style="margin-top:6px;font-size:12.5px;">Explore the gallery and add something you love.</p>
-      <button class="btn btn-dark" style="margin-top:18px;" onclick="closeCartFn(); navigateRoute('shop');">Continue Shopping</button>
-    </div>`;
+    body.innerHTML = `<div class="drawer-empty"><p>Your bag is empty.</p><p style="margin-top:6px;font-size:12.5px;">Explore the gallery and add something you love.</p></div>`;
     foot.innerHTML = '';
     return;
   }
@@ -3867,22 +3799,11 @@ function renderCart(){
 }
 
 /* ---------- wishlist drawer ---------- */
-function openWishlistDrawer(){ document.getElementById('wishOverlay').classList.add('open'); document.getElementById('wishDrawer').classList.add('open'); lockScroll(); }
-function closeWishFn(){ document.getElementById('wishOverlay').classList.remove('open'); document.getElementById('wishDrawer').classList.remove('open'); unlockScroll(); }
+function openWishlistDrawer(){ document.getElementById('wishOverlay').classList.add('open'); document.getElementById('wishDrawer').classList.add('open'); }
+function closeWishFn(){ document.getElementById('wishOverlay').classList.remove('open'); document.getElementById('wishDrawer').classList.remove('open'); }
 function renderWishlist(){
   const body = document.getElementById('wishBody');
-  if(WISHLIST.length===0){
-    body.innerHTML = `<div class="drawer-empty">
-      <svg class="empty-illustration" viewBox="0 0 120 120" aria-hidden="true">
-        <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(201,164,92,.25)" stroke-width="1.5"/>
-        <path d="M60 88C42 74 32 63 32 50c0-8.3 6.7-15 15-15 5.2 0 9.7 2.6 13 6.6C63.3 37.6 67.8 35 73 35c8.3 0 15 6.7 15 15 0 13-10 24-28 38z" fill="none" stroke="#c9a45c" stroke-width="2" stroke-linejoin="round"/>
-      </svg>
-      <p>Nothing saved yet.</p>
-      <p style="margin-top:6px;font-size:12.5px;">Tap the heart on any piece to save it here.</p>
-      <button class="btn btn-dark" style="margin-top:18px;" onclick="closeWishFn(); navigateRoute('shop');">Continue Shopping</button>
-    </div>`;
-    return;
-  }
+  if(WISHLIST.length===0){ body.innerHTML = `<div class="drawer-empty"><p>Nothing saved yet.</p></div>`; return; }
   body.innerHTML = WISHLIST.map(w=>`
     <div class="wish-row">
       <img src="${w.image}" alt="${w.name}">
@@ -3899,12 +3820,8 @@ function renderWishlist(){
 }
   async function removeWish(id){
   if(!USER){
-    WISHLIST = WISHLIST.filter(w => w.id !== id);
-    saveGuestWishlist();
-    renderCounts();
-    renderWishlist();
-    renderProductGrid();
-    showToast('Removed from wishlist');
+    showToast('Please log in first');
+    openAuthModal();
     return;
   }
 
@@ -5014,144 +4931,6 @@ function closeAuthFn(){
   document.getElementById('authOverlay').classList.remove('open');
 }
 
-/* ---------- profile avatars ---------- */
-
-const FC_AVATARS = [
-  {
-    id: 'fc-avatar-1',
-    label: 'Traditional woman in burgundy saree with gold jewellery',
-    svg: "<svg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'><rect width='100' height='100' fill='#f0dfba'/><path d='M18 100c1-20 15-32 32-32s31 12 32 32z' fill='#7a2230'/><path d='M18 100c1-20 15-32 32-32s31 12 32 32z' fill='none' stroke='#c9a45c' stroke-width='2'/><rect x='43' y='50' width='14' height='10' fill='#b57a4e'/><ellipse cx='50' cy='40' rx='14' ry='16' fill='#c98d5f'/><path d='M36 44c-1-15 6-25 14-25s15 10 14 25c-2-9-4-12-6-13c-2 1-10 1-12 0c-2 1-4 4-6 13z' fill='#1c1210'/><path d='M36 44c-2 8-2 18 1 26h6c-2-10-2-18 0-26z' fill='#1c1210'/><path d='M64 44c2 8 2 18-1 26h-6c2-10 2-18 0-26z' fill='#1c1210'/><circle cx='44' cy='40' r='1.8' fill='#241612'/><circle cx='56' cy='40' r='1.8' fill='#241612'/><path d='M45 48c2 2 8 2 10 0' stroke='#8a4b2d' stroke-width='1.6' fill='none' stroke-linecap='round'/><circle cx='35' cy='47' r='2.6' fill='#c9a45c'/><circle cx='65' cy='47' r='2.6' fill='#c9a45c'/><circle cx='50' cy='23' r='2.2' fill='#c9a45c'/><path d='M50 25l1.5 3.6h-3z' fill='#c9a45c'/></svg>"
-  },
-  {
-    id: 'fc-avatar-2',
-    label: 'Young woman in floral Indian outfit',
-    svg: "<svg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'><rect width='100' height='100' fill='#eed9ac'/><path d='M18 100c1-20 15-32 32-32s31 12 32 32z' fill='#c46a7a'/><circle cx='34' cy='82' r='2.2' fill='#f2d8e0'/><circle cx='50' cy='88' r='2.2' fill='#c9a45c'/><circle cx='66' cy='82' r='2.2' fill='#f2d8e0'/><circle cx='42' cy='76' r='1.6' fill='#c9a45c'/><circle cx='58' cy='76' r='1.6' fill='#f2d8e0'/><rect x='43' y='50' width='14' height='10' fill='#d9a075'/><ellipse cx='50' cy='40' rx='14' ry='16' fill='#d9a075'/><path d='M36 44c-1-15 6-25 14-25s15 10 14 25c-2-9-4-12-6-13c-2 1-10 1-12 0c-2 1-4 4-6 13z' fill='#2a1a12'/><circle cx='50' cy='21' r='6' fill='#2a1a12'/><circle cx='50' cy='21' r='2.4' fill='#c9a45c'/><circle cx='44' cy='40' r='1.8' fill='#241612'/><circle cx='56' cy='40' r='1.8' fill='#241612'/><path d='M45 48c2 2 8 2 10 0' stroke='#9c5b33' stroke-width='1.6' fill='none' stroke-linecap='round'/><circle cx='35' cy='47' r='2.2' fill='#c9a45c'/><circle cx='65' cy='47' r='2.2' fill='#c9a45c'/></svg>"
-  },
-  {
-    id: 'fc-avatar-3',
-    label: 'Modern woman in contemporary outfit',
-    svg: "<svg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'><rect width='100' height='100' fill='#f3e3c3'/><path d='M18 100c1-20 15-32 32-32s31 12 32 32z' fill='#2f6f6a'/><rect x='43' y='50' width='14' height='10' fill='#b57a4e'/><ellipse cx='50' cy='40' rx='14' ry='16' fill='#b57a4e'/><path d='M35 46c-2-16 6-27 15-27s17 11 15 27c-1-8-2-12-3-14c-3 1-11 1-14 0c-1 2-2 6-3 14z' fill='#1c1210'/><path d='M35 46c0 8 1 14 3 18h7c-2-8-2-14-2-18z' fill='#1c1210'/><path d='M65 46c0 8-1 14-3 18h-7c2-8 2-14 2-18z' fill='#1c1210'/><circle cx='44' cy='40' r='1.8' fill='#241612'/><circle cx='56' cy='40' r='1.8' fill='#241612'/><path d='M45 48c2 2 8 2 10 0' stroke='#7a4426' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>"
-  },
-  {
-    id: 'fc-avatar-4',
-    label: 'Woman in mustard and burgundy outfit with braid',
-    svg: "<svg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'><rect width='100' height='100' fill='#e9d3a8'/><path d='M18 100c1-20 15-32 32-32s31 12 32 32z' fill='#d99a26'/><path d='M18 100h64v6H18z' fill='#7a2230'/><rect x='43' y='50' width='14' height='10' fill='#c98d5f'/><ellipse cx='50' cy='40' rx='14' ry='16' fill='#c98d5f'/><path d='M36 44c-1-15 6-25 14-25s15 10 14 25c-2-9-4-12-6-13c-2 1-10 1-12 0c-2 1-4 4-6 13z' fill='#1c1210'/><circle cx='68' cy='50' r='3.4' fill='#1c1210'/><circle cx='69' cy='58' r='3.2' fill='#241a14'/><circle cx='68' cy='66' r='3.4' fill='#1c1210'/><circle cx='69' cy='74' r='3.2' fill='#241a14'/><circle cx='68' cy='82' r='3' fill='#c9a45c'/><circle cx='44' cy='40' r='1.8' fill='#241612'/><circle cx='56' cy='40' r='1.8' fill='#241612'/><path d='M45 48c2 2 8 2 10 0' stroke='#8a4b2d' stroke-width='1.6' fill='none' stroke-linecap='round'/><circle cx='35' cy='47' r='2.2' fill='#c9a45c'/><circle cx='65' cy='47' r='2.2' fill='#c9a45c'/></svg>"
-  },
-  {
-    id: 'fc-avatar-5',
-    label: 'Young man in ivory kurta',
-    svg: "<svg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'><rect width='100' height='100' fill='#f0dfba'/><path d='M18 100c1-20 15-32 32-32s31 12 32 32z' fill='#f2ead8'/><path d='M18 100c1-20 15-32 32-32s31 12 32 32z' fill='none' stroke='#d8c9a3' stroke-width='2'/><rect x='43' y='50' width='14' height='10' fill='#a96b42'/><ellipse cx='50' cy='40' rx='14' ry='16' fill='#a96b42'/><path d='M36 44c-1-15 6-25 14-25s15 10 14 25c-3-10-5-13-7-14c-2 1-10 1-12 0c-2 1-4 4-6 14z' fill='#1c1210'/><circle cx='44' cy='40' r='1.8' fill='#241612'/><circle cx='56' cy='40' r='1.8' fill='#241612'/><path d='M45 48c2 2 8 2 10 0' stroke='#6e4526' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>"
-  },
-  {
-    id: 'fc-avatar-6',
-    label: 'Young man in traditional outfit with brown vest',
-    svg: "<svg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'><rect width='100' height='100' fill='#eed9ac'/><path d='M18 100c1-20 15-32 32-32s31 12 32 32z' fill='#e8dcc0'/><path d='M38 68l12 10 12-10v14c0 6-5 10-12 10s-12-4-12-10z' fill='#6b4226'/><rect x='43' y='50' width='14' height='10' fill='#b57a4e'/><ellipse cx='50' cy='40' rx='14' ry='16' fill='#b57a4e'/><path d='M36 44c-1-15 6-25 14-25s15 10 14 25c-3-10-5-13-7-14c-2 1-10 1-12 0c-2 1-4 4-6 14z' fill='#241612'/><circle cx='44' cy='40' r='1.8' fill='#241612'/><circle cx='56' cy='40' r='1.8' fill='#241612'/><path d='M45 48c2 2 8 2 10 0' stroke='#7a4426' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>"
-  },
-  {
-    id: 'fc-avatar-7',
-    label: 'Teenager in black hoodie with headphones',
-    svg: "<svg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'><rect width='100' height='100' fill='#f3e3c3'/><path d='M24 62c-6-6-9-14-9-24 0-16 12-28 28-28s28 12 28 28c0 10-3 18-9 24z' fill='#161616'/><path d='M18 100c1-20 15-32 32-32s31 12 32 32z' fill='#232323'/><path d='M40 74h20v6H40z' fill='#161616'/><rect x='43' y='50' width='14' height='10' fill='#b57a4e'/><ellipse cx='50' cy='40' rx='14' ry='16' fill='#b57a4e'/><path d='M36 44c-1-15 6-25 14-25s15 10 14 25c-3-10-5-13-7-14c-2 1-10 1-12 0c-2 1-4 4-6 14z' fill='#1c1210'/><path d='M33 42c0-14 8-24 17-24s17 10 17 24' fill='none' stroke='#c9a45c' stroke-width='3.4' stroke-linecap='round'/><rect x='29' y='38' width='7' height='12' rx='3' fill='#c9a45c'/><rect x='64' y='38' width='7' height='12' rx='3' fill='#c9a45c'/><circle cx='44' cy='40' r='1.8' fill='#241612'/><circle cx='56' cy='40' r='1.8' fill='#241612'/><path d='M45 48c2 2 8 2 10 0' stroke='#7a4426' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>"
-  },
-  {
-    id: 'fc-avatar-8',
-    label: 'Young man in navy embroidered sherwani',
-    svg: "<svg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'><rect width='100' height='100' fill='#e9d3a8'/><path d='M18 100c1-20 15-32 32-32s31 12 32 32z' fill='#1f3a5f'/><path d='M42 66l8 8 8-8' fill='none' stroke='#c9a45c' stroke-width='2'/><circle cx='36' cy='80' r='1.6' fill='#c9a45c'/><circle cx='64' cy='80' r='1.6' fill='#c9a45c'/><circle cx='50' cy='86' r='1.6' fill='#c9a45c'/><rect x='43' y='50' width='14' height='10' fill='#a96b42'/><ellipse cx='50' cy='40' rx='14' ry='16' fill='#a96b42'/><path d='M36 44c-1-15 6-25 14-25s15 10 14 25c-3-10-5-13-7-14c-2 1-10 1-12 0c-2 1-4 4-6 14z' fill='#1c1210'/><circle cx='44' cy='40' r='1.8' fill='#241612'/><circle cx='56' cy='40' r='1.8' fill='#241612'/><path d='M45 48c2 2 8 2 10 0' stroke='#6e4526' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>"
-  }
-];
-
-function escapeHtml(s){
-  return String(s == null ? '' : s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-function avatarDataUri(id){
-  const a = FC_AVATARS.find(x => x.id === id);
-  return a ? 'data:image/svg+xml;utf8,' + encodeURIComponent(a.svg) : '';
-}
-
-let profileEditing = false;
-let profileNameDraft = '';
-let profileAvatarDraft = '';
-
-function openProfileEdit(){
-  if(!USER) return;
-  profileEditing = true;
-  profileNameDraft = USER.name || '';
-  profileAvatarDraft = (USER.user_metadata && USER.user_metadata.avatar) || '';
-  renderAuth();
-}
-
-function cancelProfileEdit(){
-  profileEditing = false;
-  profileNameDraft = '';
-  profileAvatarDraft = '';
-  renderAuth();
-}
-
-function selectAvatar(id){
-  if(!FC_AVATARS.some(a => a.id === id)) return;
-  profileAvatarDraft = id;
-  document.querySelectorAll('.avatar-option').forEach(btn=>{
-    const selected = btn.getAttribute('data-avatar') === id;
-    btn.classList.toggle('selected', selected);
-    btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
-  });
-  const preview = document.getElementById('profileAvatarPreview');
-  if(preview) preview.innerHTML = avatarDataUri(id)
-    ? `<img src="${avatarDataUri(id)}" alt="" style="width:100%;height:100%;display:block;">`
-    : `<span class="profile-avatar-fallback">${escapeHtml((profileNameDraft || 'F').charAt(0).toUpperCase())}</span>`;
-}
-
-async function saveProfile(){
-  if(!USER) return;
-  const nameInput = document.getElementById('profileNameInput');
-  const name = (nameInput ? nameInput.value : '').trim();
-  if(!name){
-    showToast('Please enter your name');
-    if(nameInput) nameInput.focus();
-    return;
-  }
-  if(name.length > 60){
-    showToast('Please keep your name under 60 characters');
-    return;
-  }
-  const btn = document.getElementById('profileSaveBtn');
-  if(btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
-  try{
-    const { error } = await fcSupabase.auth.updateUser({
-      data: {
-        full_name: name,
-        avatar: profileAvatarDraft || ''
-      }
-    });
-    if(error){
-      console.error('Profile save error:', error);
-      showToast('Could not save profile. Please try again.');
-      return;
-    }
-    USER.name = name;
-    USER.user_metadata = USER.user_metadata || {};
-    USER.user_metadata.full_name = name;
-    USER.user_metadata.avatar = profileAvatarDraft || '';
-    try{ saveUser(); }catch(e){}
-    profileEditing = false;
-    profileNameDraft = '';
-    profileAvatarDraft = '';
-    renderAuth();
-    if(typeof window.syncNavProfile === 'function') window.syncNavProfile();
-    showToast('Profile updated');
-  }catch(e){
-    console.error('Profile save exception:', e);
-    showToast('Could not save profile. Please try again.');
-  }finally{
-    if(btn){ btn.disabled = false; btn.textContent = 'Save'; }
-  }
-}
-
 function renderAuth(){
 
   const c = document.getElementById('authContent');
@@ -5160,96 +4939,14 @@ function renderAuth(){
 
   if(USER){
 
-    if(profileEditing){
-
-      const draftAvatar = FC_AVATARS.find(a => a.id === profileAvatarDraft);
-
-      c.innerHTML = `
-        <div style="text-align:center;margin-bottom:22px;">
-          <div class="eyebrow" style="display:block;margin-bottom:12px;">
-            Edit Profile
-          </div>
-          <div class="profile-avatar-preview" id="profileAvatarPreview">
-            ${draftAvatar
-              ? `<img src="${avatarDataUri(draftAvatar.id)}" alt="" style="width:100%;height:100%;display:block;">`
-              : `<span class="profile-avatar-fallback">${escapeHtml((profileNameDraft || 'F').charAt(0).toUpperCase())}</span>`}
-          </div>
-        </div>
-
-        <div class="eyebrow" style="display:block;margin-bottom:10px;">
-          Choose an avatar
-        </div>
-
-        <div class="avatar-grid" role="radiogroup" aria-label="Choose an avatar">
-          ${FC_AVATARS.map(a => `
-            <button
-              type="button"
-              class="avatar-option ${profileAvatarDraft === a.id ? 'selected' : ''}"
-              data-avatar="${a.id}"
-              aria-pressed="${profileAvatarDraft === a.id ? 'true' : 'false'}"
-              aria-label="${escapeHtml(a.label)}"
-              onclick="selectAvatar('${a.id}')">
-              ${a.svg}
-            </button>
-          `).join('')}
-        </div>
-
-        <div class="field" style="margin-top:20px;">
-          <label for="profileNameInput">Display name</label>
-          <input
-            id="profileNameInput"
-            type="text"
-            maxlength="60"
-            autocomplete="name"
-            placeholder="Your name"
-            value="${escapeHtml(profileNameDraft)}">
-        </div>
-
-        <div style="display:flex;gap:10px;margin-top:18px;">
-          <button
-            class="btn btn-solid"
-            style="flex:1;justify-content:center;"
-            id="profileSaveBtn"
-            onclick="saveProfile()">
-            Save
-          </button>
-          <button
-            class="btn btn-dark"
-            style="flex:1;justify-content:center;"
-            onclick="cancelProfileEdit()">
-            Cancel
-          </button>
-        </div>
-      `;
-
-      return;
-    }
-
-    const currentAvatar = FC_AVATARS.find(a => a.id === (USER.user_metadata && USER.user_metadata.avatar));
-
     c.innerHTML = `
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
-        <div class="profile-avatar-preview">
-          ${currentAvatar
-            ? `<img src="${avatarDataUri(currentAvatar.id)}" alt="" style="width:100%;height:100%;display:block;">`
-            : `<span class="profile-avatar-fallback">${escapeHtml((USER.name || 'F').charAt(0).toUpperCase())}</span>`}
-        </div>
-        <div style="min-width:0;">
-          <h2 style="font-family:'Fraunces',serif;font-weight:400;margin-bottom:4px;overflow-wrap:anywhere;">
-            Hi, ${escapeHtml(USER.name)}
-          </h2>
-          <p style="color:var(--stone);font-size:13px;margin:0;overflow-wrap:anywhere;">
-            ${escapeHtml(USER.email)}
-          </p>
-        </div>
-      </div>
+      <h2 style="font-family:'Fraunces',serif;font-weight:400;margin-bottom:6px;">
+        Hi, ${USER.name}
+      </h2>
 
-      <button
-        class="btn btn-solid"
-        style="width:100%;justify-content:center;margin-bottom:20px;"
-        onclick="openProfileEdit()">
-        Edit Profile
-      </button>
+      <p style="color:var(--stone);font-size:13px;margin-bottom:20px;">
+        ${USER.email}
+      </p>
 
       <div class="eyebrow" style="display:block;margin-bottom:8px;">
         Wishlist
@@ -5631,74 +5328,6 @@ async function logoutUser(){
 
 /* ---------- restore authentication session ---------- */
 
-/* ---------- merge guest bag & wishlist into the signed-in account ---------- */
-
-async function mergeGuestData(){
-  if(!USER) return;
-  const guestCart = CART.slice();
-  const guestWish = WISHLIST.slice();
-  try{ window.storage.set('fc:guest-cart', '[]'); }catch(e){}
-  try{ window.storage.set('fc:guest-wishlist', '[]'); }catch(e){}
-
-  try{
-    const { data: cloudWish, error: wErr } = await fcSupabase
-      .from('wishlist_items')
-      .select('product_id')
-      .eq('user_id', USER.id);
-    if(wErr){
-      console.warn('Guest wishlist merge check failed:', wErr.message);
-    }else if(Array.isArray(cloudWish)){
-      const have = new Set(cloudWish.map(r => r.product_id));
-      const missing = guestWish.filter(w => !have.has(w.id));
-      if(missing.length){
-        const { error: insErr } = await fcSupabase
-          .from('wishlist_items')
-          .insert(missing.map(w => ({ user_id: USER.id, product_id: w.id })));
-        if(insErr) console.warn('Guest wishlist merge insert warning:', insErr.message);
-      }
-    }
-  }catch(e){ console.warn('Guest wishlist merge exception:', e); }
-
-  try{
-    const { data: cloudCart, error: cErr } = await fcSupabase
-      .from('cart_items')
-      .select('product_id, color, quantity')
-      .eq('user_id', USER.id);
-    if(cErr){
-      console.warn('Guest cart merge check failed:', cErr.message);
-    }else if(Array.isArray(cloudCart)){
-      const have = new Map(cloudCart.map(r => [r.product_id + '|' + (r.color || ''), Number(r.quantity) || 0]));
-      const toInsert = [];
-      const toUpdate = [];
-      guestCart.forEach(c => {
-        const key = c.id + '|' + (c.color || '');
-        if(have.has(key)){
-          const cloudQty = have.get(key);
-          const merged = Math.min(cloudQty + Number(c.qty || 1), 99);
-          if(merged !== cloudQty){
-            toUpdate.push({ user_id: USER.id, product_id: c.id, color: c.color, quantity: merged });
-          }
-        }else{
-          toInsert.push({ user_id: USER.id, product_id: c.id, color: c.color, quantity: c.qty });
-        }
-      });
-      if(toInsert.length){
-        const { error: insErr } = await fcSupabase.from('cart_items').insert(toInsert);
-        if(insErr) console.warn('Guest cart merge insert warning:', insErr.message);
-      }
-      for(const row of toUpdate){
-        const { error: updErr } = await fcSupabase
-          .from('cart_items')
-          .update({ quantity: row.quantity })
-          .eq('user_id', USER.id)
-          .eq('product_id', row.product_id)
-          .eq('color', row.color);
-        if(updErr) console.warn('Guest cart merge update warning:', updErr.message);
-      }
-    }
-  }catch(e){ console.warn('Guest cart merge exception:', e); }
-}
-
 async function loadAuthSession(){
 
   const {
@@ -5733,18 +5362,14 @@ if(USER){
   authStep = 'email';
   pendingAuthEmail = '';
   renderAuth();
-  mergeGuestData().then(()=>{
-    loadCloudWishlist();
-    loadCloudCart();
-  });
+  loadCloudWishlist();
+  loadCloudCart();
 }
 
 if(event === 'SIGNED_OUT'){
   USER = null;
-  saveGuestCart();
-  saveGuestWishlist();
-  loadGuestCart();
-  loadGuestWishlist();
+  WISHLIST = [];
+  CART = [];
 
   renderAuth();
   renderCounts();
@@ -5762,48 +5387,22 @@ function openSearchFn(){
   document.getElementById('searchChips').innerHTML = CATEGORIES.map(c=>`<button onclick="doSearch('${c.short}')">${c.short}</button>`).join('');
   document.getElementById('searchInput').focus();
 }
-function closeSearchFn(){
-  document.getElementById('search-overlay').classList.remove('open');
-  document.getElementById('searchInput').value='';
-  document.getElementById('searchResults').innerHTML='';
-  const meta = document.getElementById('searchMeta');
-  if(meta) meta.textContent='';
-}
+function closeSearchFn(){ document.getElementById('search-overlay').classList.remove('open'); document.getElementById('searchInput').value=''; document.getElementById('searchResults').innerHTML=''; }
 function doSearch(q){
   document.getElementById('searchInput').value = q;
   renderSearchResults(q);
 }
-let searchDebounceTimer = null;
-function scheduleSearch(q){
-  clearTimeout(searchDebounceTimer);
-  searchDebounceTimer = setTimeout(()=>renderSearchResults(q), 150);
-}
-function searchHaystack(p){
-  const cat = CATEGORIES.find(c=>c.id===p.cat) || {};
-  return [
-    p.name, p.cat, cat.name || '', cat.short || '',
-    p.material || '', p.desc || '', p.story || ''
-  ].join(' ').toLowerCase();
-}
 function renderSearchResults(q){
-  q = (q || '').trim().toLowerCase();
+  q = q.trim().toLowerCase();
   const box = document.getElementById('searchResults');
-  const meta = document.getElementById('searchMeta');
-  if(!q){
-    box.innerHTML='';
-    if(meta) meta.textContent='';
-    return;
-  }
-  const results = PRODUCTS.filter(p => searchHaystack(p).includes(q)).slice(0, 8);
-  if(meta) meta.textContent = results.length
-    ? results.length + ' result' + (results.length > 1 ? 's' : '') + ' for \u201C' + q + '\u201D'
-    : '';
+  if(!q){ box.innerHTML=''; return; }
+  const results = PRODUCTS.filter(p => p.name.toLowerCase().includes(q) || p.cat.includes(q) || CATEGORIES.find(c=>c.id===p.cat).short.toLowerCase().includes(q)).slice(0,8);
   box.innerHTML = results.length ? results.map(p=>`
-    <div class="sr-item" data-id="${p.id}" onclick="closeSearchFn(); openQuickView('${p.id}')" data-cursor="VIEW" role="button" tabindex="0" onkeydown="if(event.key==='Enter'){closeSearchFn();openQuickView('${p.id}');}">
-      <img src="${p.images[0]}" alt="${p.name}">
-      <div><div class="nm">${p.name}</div><div class="cat">${(CATEGORIES.find(c=>c.id===p.cat)||{}).short || ''} · ${fmt(p.price)}</div></div>
+    <div class="sr-item" onclick="closeSearchFn(); openQuickView('${p.id}')" data-cursor="VIEW">
+      <img src="${p.images[0]}" alt="">
+      <div><div class="nm">${p.name}</div><div class="cat">${CATEGORIES.find(c=>c.id===p.cat).short} · ${fmt(p.price)}</div></div>
     </div>
-  `).join('') : `<div class="search-no-results"><p>No results for \u201C${q}\u201D.</p><p style="margin-top:6px;font-size:12.5px;">Try a material like \u201Cbrass\u201D, \u201Cwool\u201D or \u201Ccopper\u201D, or a category like \u201Cshawls\u201D.</p></div>`;
+  `).join('') : `<p style="color:rgba(243,236,220,0.5);">No results for “${q}”.</p>`;
 }
 
 /* ---------- footer client chips ---------- */
@@ -5835,11 +5434,22 @@ function initNavScroll(){
 function initCursor(){
   if(!window.matchMedia('(pointer:fine)').matches) return;
   const dot = document.getElementById('cursor-dot');
+  if(!dot || dot.dataset.cursorInitialized === 'true') return;
+  dot.dataset.cursorInitialized = 'true';
   let shown = false;
+  let latestX = 0, latestY = 0, framePending = false;
   window.addEventListener('mousemove', e=>{
-    dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%,-50%)`;
+    latestX = e.clientX;
+    latestY = e.clientY;
+    if(!framePending){
+      framePending = true;
+      requestAnimationFrame(()=>{
+        dot.style.transform = `translate3d(${latestX}px, ${latestY}px, 0) translate(-50%,-50%)`;
+        framePending = false;
+      });
+    }
     if(!shown){ dot.style.opacity = '1'; shown = true; }
-  });
+  }, {passive:true});
   document.addEventListener('mouseover', e=>{
     if(e.target.closest('a,button,[data-cursor],.swatch,.product-card,input,select')) dot.classList.add('hover');
   });
@@ -5895,17 +5505,11 @@ function wireEvents(){
 
   document.getElementById('openSearch').onclick = openSearchFn;
   document.getElementById('closeSearch').onclick = closeSearchFn;
-  document.getElementById('searchInput').addEventListener('input', e=>scheduleSearch(e.target.value));
-  document.getElementById('searchInput').addEventListener('keydown', e=>{
-    if(e.key === 'Enter'){
-      const first = document.querySelector('#searchResults .sr-item');
-      if(first){ closeSearchFn(); openQuickView(first.getAttribute('data-id')); }
-    }
-  });
+  document.getElementById('searchInput').addEventListener('input', e=>renderSearchResults(e.target.value));
 
-  document.getElementById('openMobileNav').onclick = ()=>{ document.getElementById('mobile-nav').classList.add('open'); lockScroll(); };
-  document.getElementById('closeMobileNav').onclick = ()=>{ document.getElementById('mobile-nav').classList.remove('open'); unlockScroll(); };
-  document.querySelectorAll('#mobile-nav a').forEach(a=>a.addEventListener('click', ()=>{ document.getElementById('mobile-nav').classList.remove('open'); unlockScroll(); }));
+  document.getElementById('openMobileNav').onclick = ()=>document.getElementById('mobile-nav').classList.add('open');
+  document.getElementById('closeMobileNav').onclick = ()=>document.getElementById('mobile-nav').classList.remove('open');
+  document.querySelectorAll('#mobile-nav a').forEach(a=>a.addEventListener('click', ()=>document.getElementById('mobile-nav').classList.remove('open')));
 
   document.getElementById('sortSelect').onchange = (e)=>{ currentSort = e.target.value; renderProductGrid(); };
   document.getElementById('priceFilter').onchange = (e)=>{ currentPriceRange = e.target.value; renderProductGrid(); };
@@ -5917,7 +5521,7 @@ function wireEvents(){
   document.getElementById('nlForm').addEventListener('submit', (e)=>{ e.preventDefault(); showToast('Subscribed — welcome to the circle'); e.target.reset(); });
 
   document.addEventListener('keydown', e=>{
-    if(e.key==='Escape'){ closeQuickView(); closeCheckoutFn(); closeAuthFn(); closeSearchFn(); closeCartFn(); closeWishFn(); document.body.style.overflow=''; }
+    if(e.key==='Escape'){ closeQuickView(); closeCheckoutFn(); closeAuthFn(); closeSearchFn(); closeCartFn(); closeWishFn(); }
   });
 }
 
@@ -6291,6 +5895,10 @@ body.__removed-light-theme .nav-liquid-pill{
     pill.setAttribute('aria-hidden','true');
     navCenter.insertBefore(pill,navCenter.firstChild);
   }
+  /* Reuse one shared indicator even if older markup contains duplicates. */
+  navCenter.querySelectorAll('.nav-liquid-pill').forEach((extra)=>{
+    if(extra!==pill) extra.remove();
+  });
   const links=[...navCenter.querySelectorAll('a')];
 
   function movePill(link,instant){
@@ -6640,17 +6248,10 @@ body.__removed-light-theme .nav-liquid-pill{
       return;
     }
     const meta=USER.user_metadata || {};
-    const fcAvatarId=meta.avatar || '';
-    const fcAvatar=(typeof FC_AVATARS!=='undefined') ? FC_AVATARS.find(a=>a.id===fcAvatarId) : null;
     const photo=meta.avatar_url || meta.picture || meta.photo_url || '';
     const letter=(USER.name || USER.email || 'F').trim().charAt(0).toUpperCase();
     initial.textContent=letter || 'F';
-    if(fcAvatar){
-      img.src=avatarDataUri(fcAvatar.id);
-      const avatar=document.getElementById('navProfileAvatar');
-      if(avatar) avatar.classList.remove('has-no-image');
-      btn.classList.add('has-avatar');
-    }else if(photo){
+    if(photo){
       img.src=photo;
       const avatar=document.getElementById('navProfileAvatar');
       if(avatar) avatar.classList.remove('has-no-image');
@@ -6814,186 +6415,156 @@ body.__removed-light-theme .nav-liquid-pill{
 </style>
 <!-- End Forest Craft category image sizing fix -->
 
-<!-- FOREST CRAFT — FINAL SINGLE LIQUID PILL FIX -->
+<!-- FOREST CRAFT — REFINED OUTER NAV + ONE LIQUID GLASS PILL -->
 <style id="fc-final-single-liquid-pill">
-/* Remove the extra outer capsule */
-#topnav {
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  overflow: visible !important;
-  isolation: isolate;
+/* One centered, rounded outer frame. Everything else on the page is untouched. */
+#topnav{
+  position:fixed !important;
+  top:16px !important;
+  left:50% !important;
+  right:auto !important;
+  width:min(1340px,70.5vw) !important;
+  min-height:64px;
+  padding:6px 20px !important;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  border:1px solid rgba(201,164,92,.30) !important;
+  border-radius:999px !important;
+  background:
+    radial-gradient(100% 180% at 50% 0%,rgba(255,255,255,.055),transparent 62%),
+    linear-gradient(115deg,rgba(58,17,21,.82),rgba(18,8,10,.78)) !important;
+  -webkit-backdrop-filter:blur(26px) saturate(145%);
+  backdrop-filter:blur(26px) saturate(145%);
+  box-shadow:0 14px 42px rgba(0,0,0,.22),
+    inset 0 1px 0 rgba(255,255,255,.09),
+    inset 0 -1px 0 rgba(201,164,92,.10) !important;
+  isolation:isolate;
+  overflow:visible !important;
+  transition:top .45s cubic-bezier(.22,.68,.19,1),
+    width .45s cubic-bezier(.22,.68,.19,1),
+    min-height .45s cubic-bezier(.22,.68,.19,1),
+    padding .45s cubic-bezier(.22,.68,.19,1),
+    background .45s ease,border-color .45s ease,box-shadow .45s ease;
+}
+#topnav::before{
+  content:"" !important;
+  display:block !important;
+  position:absolute;
+  inset:1px;
+  border-radius:inherit;
+  pointer-events:none;
+  z-index:-1;
+  background:linear-gradient(135deg,rgba(255,255,255,.045),transparent 45%,rgba(201,164,92,.035));
+}
+#topnav::after{content:none !important;display:none !important;}
+#topnav.scrolled{
+  top:12px !important;
+  width:min(1340px,70.5vw) !important;
+  min-height:60px;
+  padding:5px 18px !important;
+  border:1px solid rgba(231,201,126,.34) !important;
+  border-radius:999px !important;
+  background:radial-gradient(100% 180% at 50% 0%,rgba(255,255,255,.045),transparent 62%),rgba(18,8,10,.86) !important;
+  -webkit-backdrop-filter:blur(30px) saturate(155%);
+  backdrop-filter:blur(30px) saturate(155%);
+  box-shadow:0 12px 36px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.08) !important;
 }
 
-#topnav::before,
-#topnav::after {
-  content: none !important;
-  display: none !important;
+/* Keep the existing logo, navigation labels and action icons; no extra capsule. */
+#topnav .nav-logo,#topnav .nav-right,#topnav .nav-icon-btn{position:relative;flex-shrink:0;}
+#topnav .nav-center{
+  position:relative !important;
+  isolation:isolate !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center;
+  gap:2px !important;
+  padding:4px !important;
+  /* Layer 2: the stationary glass track surrounding all five links. */
+  border:1px solid rgba(243,236,220,.105) !important;
+  border-radius:999px !important;
+  background:
+    radial-gradient(100% 160% at 50% 0%,rgba(255,255,255,.045),transparent 70%),
+    rgba(255,255,255,.025) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045) !important;
+  -webkit-backdrop-filter:blur(16px) saturate(130%) !important;
+  backdrop-filter:blur(16px) saturate(130%) !important;
+  flex-shrink:1;
 }
-/* Remove the unwanted capsule behind ALL navigation links */
-#topnav .nav-center {
-  position: relative !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 3px !important;
-  padding: 4px !important;
-
-  background: transparent !important;
-  border: 1px solid transparent !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  isolation: isolate !important;
-}
-
-/* Links must never draw their own glass pills */
 #topnav .nav-center a,
 #topnav .nav-center a:hover,
 #topnav .nav-center a.is-active,
 #topnav .nav-center a:focus,
-#topnav .nav-center a:focus-visible {
-  position: relative !important;
-  z-index: 1 !important;
-  background: transparent !important;
-  border: 1px solid transparent !important;
-  border-radius: 999px !important;
-  box-shadow: none !important;
-  outline: none !important;
-  text-decoration: none !important;
+#topnav .nav-center a:focus-visible{
+  position:relative !important;
+  z-index:1 !important;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:9px 13px !important;
+  white-space:nowrap;
+  color:var(--cream-text);
+  border:1px solid transparent !important;
+  border-radius:999px !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  outline:none;
+  text-decoration:none !important;
+  transition:color .3s ease;
 }
-
-/* Remove all extra capsule and underline effects */
-#topnav .nav-center::before,
-#topnav .nav-center::after,
 #topnav .nav-center a::before,
-#topnav .nav-center a::after {
-  content: none !important;
-  display: none !important;
-}
-/* The ONLY small glass pill: keep the existing moving element */
-#topnav .nav-center > .nav-liquid-pill {
-  position: absolute !important;
-  display: block !important;
-  top: 4px !important;
-  left: 0 !important;
-  height: calc(100% - 8px) !important;
-  width: 72px;
-  z-index: 0 !important;
-  pointer-events: none !important;
-  opacity: 1 !important;
-  border-radius: 999px !important;
+#topnav .nav-center a::after,
+#topnav .nav-center::before,
+#topnav .nav-center::after{content:none !important;display:none !important;}
 
-  background:
-    radial-gradient(
-      120% 120% at 30% 20%,
-      rgba(255, 255, 255, 0.17),
-      transparent 58%
-    ),
-    linear-gradient(
-      135deg,
-      rgba(201, 164, 92, 0.25),
-      rgba(88, 28, 32, 0.28)
-    ) !important;
+/* The one and only small liquid-glass pill; JS already moves this element. */
+#topnav .nav-center > .nav-liquid-pill{
+  position:absolute !important;
+  display:block !important;
+  top:4px !important;
+  left:0 !important;
+  height:calc(100% - 8px) !important;
+  width:72px;
+  z-index:0 !important;
+  pointer-events:none !important;
+  opacity:1;
+  border-radius:999px !important;
+  background:radial-gradient(120% 120% at 30% 20%,rgba(255,255,255,.17),transparent 58%),
+    linear-gradient(135deg,rgba(201,164,92,.25),rgba(88,28,32,.28)) !important;
+  border:1px solid rgba(231,201,126,.28) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 3px 12px rgba(0,0,0,.12) !important;
+  -webkit-backdrop-filter:blur(12px) saturate(140%);
+  backdrop-filter:blur(12px) saturate(140%);
+  transform:translate3d(0,0,0);
+  transition:transform .55s cubic-bezier(.16,1,.3,1),width .55s cubic-bezier(.16,1,.3,1),opacity .2s ease !important;
+}
+#topnav .nav-icon-btn{border-radius:50%;}
 
-  border: 1px solid rgba(231, 201, 126, 0.24) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    0 3px 12px rgba(0, 0, 0, 0.12) !important;
-
-  transform: translate3d(0, 0, 0);
-  transition:
-    transform 0.38s cubic-bezier(0.22, 0.68, 0.19, 1),
-    width 0.38s cubic-bezier(0.22, 0.68, 0.19, 1),
-    opacity 0.2s ease !important;
+@media(max-width:1100px){
+  #topnav{top:16px !important;width:calc(100% - 36px) !important;min-height:64px;padding:6px 16px !important;gap:12px;}
+  #topnav.scrolled{top:12px !important;width:calc(100% - 36px) !important;min-height:60px;padding:5px 14px !important;}
+  #topnav .nav-center{gap:0 !important;}
+  #topnav .nav-center a{padding:8px 9px !important;font-size:11px;}
 }
-
-/* Keep the logo and right-side icons unchanged */
-#topnav .nav-logo,
-#topnav .nav-right,
-#topnav .nav-icon-btn {
-  position: relative;
+@media(max-width:900px){
+  #topnav{border-radius:28px !important;}
+  #topnav.scrolled{border-radius:26px !important;}
+  #topnav .nav-center{display:none !important;}
 }
-
-/* Responsive spacing */
-@media (max-width: 900px) {
-  #topnav .nav-center {
-    display: none !important;
-  }
-
-}
-</style>
-<!-- END FINAL SINGLE LIQUID PILL FIX -->
-
-<!-- FOREST CRAFT — PROFILE AVATARS, EMPTY STATES & MOBILE FIXES -->
-<style id="fc-profile-avatars-mobile">
-/* ---------- avatar selector ---------- */
-.profile-avatar-preview{
-  width:84px;height:84px;border-radius:50%;overflow:hidden;
-  background:linear-gradient(145deg,#c9a45c,#6e252d);
-  border:1px solid rgba(231,201,126,.55);
-  display:flex;align-items:center;justify-content:center;
-  margin:0 auto;flex:0 0 auto;
-}
-.profile-avatar-preview svg{width:100%;height:100%;display:block;}
-.profile-avatar-fallback{font-family:'Fraunces',serif;font-size:30px;color:#fffdf8;}
-.avatar-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
-.avatar-option{
-  appearance:none;position:relative;border:2px solid transparent;
-  background:rgba(255,255,255,.04);border-radius:16px;padding:6px;
-  cursor:pointer;line-height:0;
-  transition:transform .35s cubic-bezier(.22,.68,.19,1),border-color .25s ease,box-shadow .25s ease;
-}
-.avatar-option svg{width:100%;height:auto;border-radius:11px;display:block;}
-@media(hover:hover){
-  .avatar-option:hover{
-    transform:scale(1.1);border-color:rgba(231,201,126,.45);
-    box-shadow:0 10px 24px rgba(0,0,0,.3);z-index:2;
-  }
-}
-.avatar-option:focus-visible{outline:2px solid #e7c97e;outline-offset:2px;}
-.avatar-option.selected{
-  border-color:#e7c97e;
-  box-shadow:0 0 0 3px rgba(231,201,126,.25),0 8px 20px rgba(0,0,0,.28);
-}
-.avatar-option.selected::after{
-  content:"✓";position:absolute;top:-7px;right:-7px;
-  width:20px;height:20px;border-radius:50%;
-  background:#c9a45c;color:#16090b;
-  font-size:11px;font-weight:700;line-height:20px;text-align:center;
-}
-
-/* ---------- empty states & search meta ---------- */
-.empty-illustration{width:96px;height:96px;margin:0 auto 14px;display:block;}
-.drawer-empty{text-align:center;padding:28px 10px;}
-#toast{z-index:13000;}
-.search-meta{
-  font-size:11px;letter-spacing:.12em;text-transform:uppercase;
-  color:rgba(243,236,220,.45);margin-top:10px;min-height:14px;
-}
-.search-no-results{padding:24px 0;color:rgba(243,236,220,.6);}
-#searchResults .sr-item:focus-visible{outline:2px solid #e7c97e;outline-offset:2px;}
-
-/* ---------- mobile fixes ---------- */
-@media(max-width:480px){
-  .drawer{width:100%;}
-  .modal-box{max-height:92svh;overflow-y:auto;}
-  .auth-box{padding:34px 22px;}
-  #search-overlay{padding:64px 18px 18px;}
-  #topnav .nav-right{gap:2px;}
-  .nav-icon-btn{min-width:44px;min-height:44px;}
-  .avatar-grid{gap:8px;}
-  .qty-stepper button{min-width:44px;min-height:44px;}
-  .wish-row .actions{gap:10px;}
-  .wish-row .actions button{min-height:36px;}
-}
-@media(max-width:360px){
-  .avatar-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;}
+@media(max-width:640px){
+  #topnav{top:12px !important;width:calc(100% - 24px) !important;min-height:60px;padding:8px 12px !important;border-radius:24px !important;}
+  #topnav.scrolled{top:8px !important;width:calc(100% - 20px) !important;min-height:56px;padding:7px 10px !important;border-radius:22px !important;}
+  #topnav .nav-logo{gap:8px;}
+  #topnav .nav-right{gap:10px;}
 }
 @media(prefers-reduced-motion:reduce){
-  .avatar-option{transition:none;}
+  #topnav,#topnav .nav-center > .nav-liquid-pill{transition:none !important;}
 }
 </style>
+<!-- END REFINED OUTER NAV + ONE LIQUID GLASS PILL -->
 
 </body>
 </html>
